@@ -20,13 +20,12 @@ var dissolveCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		switch len(args) {
 			case 0:
-				fmt.Println("Dissolving the current directory")
 				if dirExists("./.sol") {
 					if err := deleteDir("./.sol"); err != nil {
 						fmt.Println(err)
 					}
 				} else {
-					fmt.Println("Directory does not exist")
+					fmt.Println("Sol was not initialised in the current directory.")
 				}
 			case 1:	
 				if dirExists(args[0] + "/.sol") {
