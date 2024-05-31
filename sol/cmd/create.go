@@ -6,7 +6,6 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 	"github.com/spf13/cobra"
 )
 const (
@@ -14,6 +13,7 @@ const (
 	solMetaDir = ".sol/meta"
 	solCheckout = ".sol/checkout"
 	solBranches = ".sol/branches"
+	excessArgsError = "Too many arguments\n"
 )
 
 // createCmd represents the create command
@@ -32,35 +32,13 @@ var createCmd = &cobra.Command{
                     fmt.Println("Directory does not exist")
                 }	
             default:
-                fmt.Println("Too many arguments")
+                fmt.Print(excessArgsError)
         }
 		return nil
     },
 }
 
-func initializeDirs(dirs []string) {
-	for _, dir := range dirs {
-		if !dirExists(dir) {
-			if err := createDir(dir); err != nil {
-				fmt.Println(err)
-			}
-		}
-	}
-}
 
-func dirExists(dir string) bool {
-	if _, err := os.Stat(dir); os.IsNotExist(err) {
-		return false
-	}
-	return true
-}
-
-func createDir(dir string) error {
-	if err := os.Mkdir(dir, 0755); err != nil {
-		return err
-	}
-	return nil
-}
 
 func init() {
 	rootCmd.AddCommand(createCmd)
