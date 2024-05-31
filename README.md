@@ -2,15 +2,15 @@
 
 # Commands
 
-## `init`
+## `create`
 
 ## Synopsis
 
 <pre>
-<b>sol init</b> [-w|--warning] [-v|--verbose] [-h|--help] <b>[directory]</b>
+<b>sol create</b> [-w|--warning] [-v|--verbose] [-h|--help] <b>[<directory>\]</b>
 </pre>
 
-## Description
-Initializes a sol repository in the given directory.
+## Descriptions
+Creates a sol repository in the given directory. Default directory is the current directory.
 
 
