@@ -6,11 +6,9 @@
 
 ## Synopsis
 
-~~~
-**sol create** [-h|--help] [-w|--warning] [-v|--verbose] [-h|--help] **[\<directory\>]**
-~~~
+> **sol create** [-h|--help] [-w|--warning] [-v|--verbose] [-h|--help] **[\<directory\>]**
 
-## Descriptions
+## Description
 Creates a sol repository in the given directory. Default directory is the current directory.
 
 
@@ -18,9 +16,25 @@ Creates a sol repository in the given directory. Default directory is the curren
 
 ## Synopsis
 
-~~~
-**sol dissolve** [-h|--help] [-w|--warning] [-v|--verbose] [-h|--help] **[\<directory\>]**
-~~~
+> **sol dissolve** [-h|--help] [-w|--warning] [-v|--verbose] [-h|--help] **[\<directory\>]**
 
-## Descriptions
+## Description
 Creates a sol repository in the given directory. Default directory is the current directory.
+
+
+## `stage`
+
+## Synopsis
+
+## `commit`
+
+## Synopsis
+
+## Description
+
+
+## `clone`
+
+## Synopsis
+
+## Description
