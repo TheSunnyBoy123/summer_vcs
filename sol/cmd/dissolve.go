@@ -1,6 +1,5 @@
 /*
 Copyright © 2024 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
@@ -19,27 +18,27 @@ var dissolveCmd = &cobra.Command{
 	This action is irreversible and will delete all the files and directories created by sol.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		switch len(args) {
-			case 0:
-				if dirExists("./.sol") {
-					if err := deleteDir("./.sol"); err != nil {
-						fmt.Println(err)
-					}
-				} else {
-					fmt.Println("Sol was not initialised in the current directory.")
+		case 0:
+			if dirExists("./.sol") {
+				if err := deleteDir("./.sol"); err != nil {
+					fmt.Println(err)
 				}
-			case 1:	
-				if dirExists(args[0] + "/.sol") {
-					fmt.Println("Dissolving the provided directory")
-					if err := deleteDir(args[0] + "/.sol"); err != nil {
-						fmt.Println(err)
-					}
-				} else {
-					fmt.Println("Directory does not exist")
+			} else {
+				fmt.Println("Sol was not initialised in the current directory.")
+			}
+		case 1:
+			if dirExists(args[0] + "/.sol") {
+				fmt.Println("Dissolving the provided directory")
+				if err := deleteDir(args[0] + "/.sol"); err != nil {
+					fmt.Println(err)
 				}
-			default:
-				//Print ExcessArgsError + Use string defined above
-				fmt.Print(excessArgsError)
-				fmt.Print("Usage: " + cmd.Use + "\n")
+			} else {
+				fmt.Println("Directory does not exist")
+			}
+		default:
+			//Print ExcessArgsError + Use string defined above
+			fmt.Print(excessArgsError)
+			fmt.Print("Usage: " + cmd.Use + "\n")
 		}
 	},
 }

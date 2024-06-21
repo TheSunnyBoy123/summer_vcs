@@ -3,52 +3,46 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 
 	"github.com/spf13/cobra"
 )
 
+var verbose bool
+
 const (
 	solMainDir      = ".sol"
-	solMetaDir      = ".sol/meta"
-	solCheckout     = ".sol/checkout"
+	solCommits      = ".sol/commits"
 	solBranches     = ".sol/branches"
+	solObjects      = ".sol/objects"
+	solRefs         = ".sol/refs"
 	excessArgsError = "Too many arguments\n"
 )
-
-func checkParentRepos(dir string) bool {
-	for {
-		dir = filepath.Dir(dir)
-		if _, err := os.Stat(filepath.Join(dir, ".sol")); err == nil {
-			// .sol directory exists in this directory
-			return false
-		}
-		if dir == "/" || dir == "." {
-			//reached root directory
-			break
-		}
-	}
-	return true
-}
 
 var createCmd = &cobra.Command{
 	Use:   "create [<directory>]",
 	Short: "Initialises sol within the provided directory",
 	Long:  `Creates .sol directory as well as the metadata files required for sol to function.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if verbose {
+			fmt.Println("verbose asked for")
+			return nil
+		}
 		switch len(args) {
 		case 0:
 			//check no parent dir has .sol dir
 			wd, _ := os.Getwd()
-			if checkParentRepos(wd) {
-				initializeDirs([]string{solMainDir, solMetaDir, solCheckout, solBranches})
+			if notInitialisedRepo(wd) {
+				initializeDirs([]string{solMainDir, solCommits, solBranches})
+				createFiles([]string{"./.sol/metadata.txt", "./.sol/stagedChanges.txt"})
+				db := internals.Database{"./"}
 			} else {
 				fmt.Println("Repository already exists for this directory")
 			}
 
 		case 1:
-			if dirExists(args[0]) {
-				initializeDirs([]string{args[0] + "/" + solMainDir, args[0] + "/" + solMetaDir, args[0] + "/" + solCheckout, args[0] + "/" + solBranches})
+			if dirExists(args[0]) && notInitialisedRepo(args[0]) {
+				initializeDirs([]string{args[0] + "/" + solMainDir, args[0] + "/" + solCommits, args[0] + "/" + solBranches})
+				createFiles([]string{args[0] + "/.sol/metadata.txt", args[0] + "/.sol/stagedChanges.txt"})
 			} else {
 				fmt.Println("Directory does not exist")
 			}
@@ -60,5 +54,6 @@ var createCmd = &cobra.Command{
 }
 
 func init() {
+	createCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "Print verbose output")
 	rootCmd.AddCommand(createCmd)
 }

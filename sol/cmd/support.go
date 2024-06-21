@@ -2,8 +2,34 @@ package cmd
 
 import (
 	"fmt"
+	"log"
 	"os"
+	"path/filepath"
 )
+
+func notInitialisedRepo(dir string) bool {
+	for {
+		dir = filepath.Dir(dir)
+		if _, err := os.Stat(filepath.Join(dir, ".sol")); err == nil {
+			// .sol directory exists in this directory
+			return false
+		}
+		if dir == "/" || dir == "." {
+			//reached root directory
+			break
+		}
+	}
+	return true
+}
+
+func createFiles(fileDir []string) {
+	for _, path := range fileDir {
+		_, err := os.Create(path)
+		if err != nil {
+			log.Fatalf("Failed creating file: %s", err)
+		}
+	}
+}
 
 func initializeDirs(dirs []string) {
 	for _, dir := range dirs {
