@@ -1,9 +1,12 @@
+/*
+Copyright © 2024 NAME HERE <EMAIL ADDRESS>
+
+*/
 package cmd
 
 import (
 	"fmt"
 	"os"
-
 	"github.com/spf13/cobra"
 )
 
@@ -18,10 +21,12 @@ const (
 	excessArgsError = "Too many arguments\n"
 )
 
-var createCmd = &cobra.Command{
-	Use:   "create [<directory>]",
+
+// initCmd represents the init command
+var initCmd = &cobra.Command{
+	Use:   "init [<directory>]",
 	Short: "Initialises sol within the provided directory",
-	Long:  `Creates .sol directory as well as the metadata files required for sol to function.`,
+	Long: `Creates .sol directory as well as the metadata files required for sol to function.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if verbose {
 			fmt.Println("verbose asked for")
@@ -34,11 +39,9 @@ var createCmd = &cobra.Command{
 			if notInitialisedRepo(wd) {
 				initializeDirs([]string{solMainDir, solCommits, solBranches})
 				createFiles([]string{"./.sol/metadata.txt", "./.sol/stagedChanges.txt"})
-				db := internals.Database{"./"}
 			} else {
 				fmt.Println("Repository already exists for this directory")
 			}
-
 		case 1:
 			if dirExists(args[0]) && notInitialisedRepo(args[0]) {
 				initializeDirs([]string{args[0] + "/" + solMainDir, args[0] + "/" + solCommits, args[0] + "/" + solBranches})
@@ -54,6 +57,7 @@ var createCmd = &cobra.Command{
 }
 
 func init() {
-	createCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "Print verbose output")
-	rootCmd.AddCommand(createCmd)
+	rootCmd.AddCommand(initCmd)
+	initCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "Print verbose output")
+	rootCmd.AddCommand(initCmd)
 }
