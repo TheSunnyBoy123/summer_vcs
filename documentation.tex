@@ -1,0 +1,8 @@
+\subsection{git merge}
+`git merge' allows the user to merge two branches together. The command is used as follows:
+\begin{verbatim}
+git merge <branch> 
+\end{verbatim}
+This command will merge the branch specified into the current branch. If there are any conflicts, the user will have to resolve them manually. The user can also specify the `--no-ff' flag to force a merge commit to be created, even if the merge could be done with a fast-forward. This is useful for keeping a history of all merges that have been done.
+
+The way this works is by moving the current head to the commit that the branch argument points to, and then creating a new commit that has two parents, the current head and the commit that the branch argument points to. This new commit is then set as the new head.

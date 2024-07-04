@@ -1,10 +1,12 @@
 package cmd
 
 import (
-	"fmt"
-	"log"
-	"os"
+	"crypto/sha1"
+    "fmt"
 	"path/filepath"
+    "io/ioutil"
+    "log"
+    "os"
 )
 
 func notInitialisedRepo(dir string) bool {
@@ -60,4 +62,47 @@ func deleteDir(dir string) error {
 		return err
 	}
 	return nil
+}
+
+
+
+func writeFile(dir string, contents string) {
+	file, err := os.Create(dir)
+	if err != nil {
+		log.Fatalf("Failed creating file: %s", err)
+	}
+	defer file.Close()
+	_, err = file.WriteString(contents)
+	if err != nil {
+		log.Fatalf("Failed writing to file: %s", err)
+	}
+}
+
+func readFile (dir string) string{
+	file, err := os.Open(dir)
+	if err != nil {
+		log.Fatalf("Failed opening file: %s", err)
+	}
+	defer file.Close()
+	contents, err := ioutil.ReadAll(file)
+	if err != nil {
+		log.Fatalf("Failed reading file: %s", err)
+	}
+	return string(contents)
+}
+
+
+func hashBlob(dir string) {
+    contents := readFile(dir)
+    contents = fmt.Sprintf("blob %d\x00%s", len(contents), contents)
+    
+    h := sha1.New()
+    _, err := h.Write([]byte(contents))
+    if err != nil {
+        log.Fatalf("Failed to hash contents: %s", err)
+    }
+    hash := fmt.Sprintf("%x", h.Sum(nil))
+    
+    initializeDirs([]string{".sol/objects/" + hash[:2]})
+    writeFile(".sol/objects/" + hash[:2] + "/" + hash[2:], contents)
 }
