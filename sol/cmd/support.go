@@ -9,6 +9,14 @@ import (
     "os"
 )
 
+
+func fileExists(dir string) bool {
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		return false
+	}
+	return true
+}
+
 func notInitialisedRepo(dir string) bool {
 	for {
 		dir = filepath.Dir(dir)
@@ -91,18 +99,12 @@ func readFile (dir string) string{
 	return string(contents)
 }
 
-
-func hashBlob(dir string) {
-    contents := readFile(dir)
-    contents = fmt.Sprintf("blob %d\x00%s", len(contents), contents)
-    
-    h := sha1.New()
-    _, err := h.Write([]byte(contents))
-    if err != nil {
-        log.Fatalf("Failed to hash contents: %s", err)
-    }
-    hash := fmt.Sprintf("%x", h.Sum(nil))
-    
-    initializeDirs([]string{".sol/objects/" + hash[:2]})
-    writeFile(".sol/objects/" + hash[:2] + "/" + hash[2:], contents)
+func hashContents(contents string) string {
+	// hash contents using sha1 library
+	hash := sha1.New()
+	hash.Write([]byte(contents))
+	return fmt.Sprintf("%x", hash.Sum(nil))
 }
+
+
+

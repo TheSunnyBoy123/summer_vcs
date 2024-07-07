@@ -37,21 +37,24 @@ var initCmd = &cobra.Command{
 			//check no parent dir has .sol dir
 			wd, _ := os.Getwd()
 			if notInitialisedRepo(wd) {
-				initializeDirs([]string{solMainDir, solCommits, solBranches})
-				createFiles([]string{"./.sol/metadata.txt", "./.sol/stagedChanges.txt"})
+				initializeDirs([]string{solMainDir, solCommits, solBranches, solObjects})
+				createFiles([]string{"./.sol/stagedChanges.txt"})
+				fmt.Println("Repository initialised")
 			} else {
 				fmt.Println("Repository already exists for this directory")
 			}
 		case 1:
 			if dirExists(args[0]) && notInitialisedRepo(args[0]) {
-				initializeDirs([]string{args[0] + "/" + solMainDir, args[0] + "/" + solCommits, args[0] + "/" + solBranches})
-				createFiles([]string{args[0] + "/.sol/metadata.txt", args[0] + "/.sol/stagedChanges.txt"})
+				initializeDirs([]string{args[0] + "/" + solMainDir, args[0] + "/" + solCommits, args[0] + "/" + solBranches, args[0] + "/" + solObjects})
+				createFiles([]string{args[0] + "/.sol/stagedChanges.txt"})
+				fmt.Println("Repository initialised")
 			} else {
 				fmt.Println("Directory does not exist")
 			}
 		default:
 			fmt.Print(excessArgsError)
 		}
+
 		return nil
 	},
 }

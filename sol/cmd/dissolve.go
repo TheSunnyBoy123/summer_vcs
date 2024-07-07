@@ -23,6 +23,7 @@ var dissolveCmd = &cobra.Command{
 				if err := deleteDir("./.sol"); err != nil {
 					fmt.Println(err)
 				}
+				fmt.Println("Repository dissolved")
 			} else {
 				fmt.Println("Sol was not initialised in the current directory.")
 			}
@@ -32,11 +33,11 @@ var dissolveCmd = &cobra.Command{
 				if err := deleteDir(args[0] + "/.sol"); err != nil {
 					fmt.Println(err)
 				}
+				fmt.Println("Repository dissolved")
 			} else {
 				fmt.Println("Directory does not exist")
 			}
 		default:
-			//Print ExcessArgsError + Use string defined above
 			fmt.Print(excessArgsError)
 			fmt.Print("Usage: " + cmd.Use + "\n")
 		}
@@ -44,15 +45,7 @@ var dissolveCmd = &cobra.Command{
 }
 
 func init() {
+
 	rootCmd.AddCommand(dissolveCmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// dissolveCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// dissolveCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

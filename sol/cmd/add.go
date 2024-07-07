@@ -2,9 +2,22 @@ package cmd
 
 import (
 	"fmt"
-
+	"io/ioutil"
+	"path/filepath"
 	"github.com/spf13/cobra"
 )
+
+func hashDir(dir string) error {
+	fmt.Println("Hashing directory: ", dir)
+	return nil
+}
+
+func hashFile(dir string) error {
+	// create blob of file
+	// get 
+	fmt.Println("Hashing file: ", file)
+	return nil
+}
 
 // addCmd represents the add command
 var addCmd = &cobra.Command{
@@ -12,20 +25,39 @@ var addCmd = &cobra.Command{
 	Short: "Adds all modified files to the staging area",
 	Long: `Adds all modified files to the staging area. This command is used to stage all the files that have been modified in the working directory.`,
 	RunE: func(cmd *cobra.Command, args []string) error{
-		//go  
+		// Assuming the current directory is the target, but you can adjust the path as needed
+		currentDir := "."
+
+		// Read the directory contents
+		entries, err := ioutil.ReadDir(currentDir)
+		if err != nil {
+			return fmt.Errorf("failed to read directory: %w", err)
+		}
+	
+		for _, entry := range entries {
+			// Construct the full path of the entry
+			fullPath := filepath.Join(currentDir, entry.Name())
+	
+			if entry.IsDir() {
+				// If the entry is a directory
+				err := hashDir(fullPath) // Assuming hashDir is implemented elsewhere
+				if err != nil {
+					return fmt.Errorf("failed to hash directory '%s': %w", fullPath, err)
+				}
+			} else {
+				// If the entry is a file
+				err := hashFile(fullPath) // Assuming hashFile is implemented elsewhere
+				if err != nil {
+					return fmt.Errorf("failed to hash file '%s': %w", fullPath, err)
+				}
+			}
+		}
+	
+		return nil
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(addCmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// addCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// addCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
