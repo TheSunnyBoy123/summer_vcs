@@ -1,7 +1,3 @@
-/*
-Copyright © 2024 NAME HERE <EMAIL ADDRESS>
-
-*/
 package cmd
 
 import (
@@ -33,11 +29,8 @@ to quickly create a Cobra application.`,
 			contents := readFile(file)
 			size := len(contents)
 			newContents := "Blob " + fmt.Sprint(size) + "\x00" + contents
-			//compress newcontents using zlib
 			newContents = compress(newContents)
-			// hash newcontents using sha1 library
 			hash := hashContents(newContents)
-			// write newcontents to .sol/objects/hash[:2]/hash[2:]
 			createDir(".sol/objects/"+hash[:2])
 			writeFile(".sol/objects/"+hash[:2]+"/"+hash[2:], newContents)
 		} else {
