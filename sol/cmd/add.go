@@ -15,7 +15,7 @@ func hashDir(dir string) error {
 func hashFile(dir string) error {
 	// create blob of file
 	// get 
-	fmt.Println("Hashing file: ", file)
+	fmt.Println("Hashing file: ", dir)
 	return nil
 }
 

@@ -29,7 +29,9 @@ to quickly create a Cobra application.`,
 		fmt.Println("catFile called with hash: ", args[0])
 		hash := args[0]
 		if fileExists(".sol/objects/" + hash[:2] + "/" + hash[2:]) {
-			fmt.Println("File exists")
+			contents := readFile(".sol/objects/" + hash[:2] + "/" + hash[2:])
+			
+			fmt.Println(contents)
 		} else {
 			fmt.Println("File does not exist")
 		}

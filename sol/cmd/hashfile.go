@@ -27,12 +27,14 @@ to quickly create a Cobra application.`,
 			fmt.Println("Usage: hash-file <filename>")
 			return
 		}
-		fmt.Println("hashObject called with filename: ", args[0])
+		// fmt.Println("hashObject called with filename: ", args[0])
 		file := args[0]
 		if fileExists(file) {
 			contents := readFile(file)
 			size := len(contents)
 			newContents := "Blob " + fmt.Sprint(size) + "\x00" + contents
+			//compress newcontents using zlib
+			newContents = compress(newContents)
 			// hash newcontents using sha1 library
 			hash := hashContents(newContents)
 			// write newcontents to .sol/objects/hash[:2]/hash[2:]

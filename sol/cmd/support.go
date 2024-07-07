@@ -7,6 +7,9 @@ import (
     "io/ioutil"
     "log"
     "os"
+	"compress/zlib"
+	"bytes"
+	// "github.com/spf13/cobra"
 )
 
 
@@ -106,5 +109,12 @@ func hashContents(contents string) string {
 	return fmt.Sprintf("%x", hash.Sum(nil))
 }
 
-
+func compress(contents string) string {
+	// this function compresses the contents using zlib and returns the compressed contents as a string
+	var compressedContent bytes.Buffer
+	w := zlib.NewWriter(&compressedContent)
+	w.Write([]byte(contents))
+	w.Close()
+	return compressedContent.String()
+}
 
