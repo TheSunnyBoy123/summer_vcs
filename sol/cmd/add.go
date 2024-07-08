@@ -8,8 +8,12 @@ import (
 )
 
 func hashDir(dir string) error {
-	fmt.Println("Hashing directory: ", dir)
-	return nil
+	// recursive function that first goes through all children directories and files, saving each file's hash to a list so that later we can create the object file for each directory
+	// structure for a hashDir object file:
+	// Tree <length of file>\0
+	// ChildType <obj_sha>\0
+	// ChildType <obj_sha>\0
+
 }
 
 func hashFile(dir string) error {
@@ -29,11 +33,15 @@ var addCmd = &cobra.Command{
 		if err != nil {
 			return fmt.Errorf("failed to read directory: %w", err)
 		}
-	
+		
 		for _, entry := range entries {
 			fullPath := filepath.Join(currentDir, entry.Name())
 	
 			if entry.IsDir() {
+				if entry.Name() == ".sol" {
+					continue
+				}
+
 				err := hashDir(fullPath)
 				if err != nil {
 					return fmt.Errorf("failed to hash directory '%s': %w", fullPath, err)
