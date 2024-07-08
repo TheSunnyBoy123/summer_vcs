@@ -7,12 +7,32 @@ import (
 	"github.com/spf13/cobra"
 )
 
+func hashChild(dir string) error { 
+	return nil
+}
 func hashDir(dir string) error {
 	// recursive function that first goes through all children directories and files, saving each file's hash to a list so that later we can create the object file for each directory
 	// structure for a hashDir object file:
 	// Tree <length of file>\0
 	// ChildType <obj_sha>\0
 	// ChildType <obj_sha>\0
+
+	// loop iterating over items in this dir
+	entries, _ := ioutil.ReadDir(dir)
+	for _, entry := range entries {
+		fullPath := filepath.Join(dir, entry.Name())
+
+		if entry.IsDir() {
+			if entry.Name() == ".sol" {
+				continue
+			}
+			fmt.Println("Hashing directory: ", fullPath)
+			hashDir(fullPath)
+		} else {
+			fmt.Println("Hashing file: ", fullPath)
+		}
+	}
+	return nil
 
 }
 
@@ -29,31 +49,32 @@ var addCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error{
 		currentDir := "."
 
-		entries, err := ioutil.ReadDir(currentDir)
-		if err != nil {
-			return fmt.Errorf("failed to read directory: %w", err)
-		}
+		// entries, err := ioutil.ReadDir(currentDir)
+		// if err != nil {
+		// 	return fmt.Errorf("failed to read directory: %w", err)
+		// }
 		
-		for _, entry := range entries {
-			fullPath := filepath.Join(currentDir, entry.Name())
+		// for _, entry := range entries {
+		// 	fullPath := filepath.Join(currentDir, entry.Name())
 	
-			if entry.IsDir() {
-				if entry.Name() == ".sol" {
-					continue
-				}
+		// 	if entry.IsDir() {
+		// 		if entry.Name() == ".sol" {
+		// 			continue
+		// 		}
 
-				err := hashDir(fullPath)
-				if err != nil {
-					return fmt.Errorf("failed to hash directory '%s': %w", fullPath, err)
-				}
-			} else {
-				// If the entry is a file
-				err := hashFile(fullPath) 
-				if err != nil {
-					return fmt.Errorf("failed to hash file '%s': %w", fullPath, err)
-				}
-			}
-		}
+		// 		err := hashDir(fullPath)
+		// 		if err != nil {
+		// 			return fmt.Errorf("failed to hash directory '%s': %w", fullPath, err)
+		// 		}
+		// 	} else {
+		// 		// If the entry is a file
+		// 		err := hashFile(fullPath) 
+		// 		if err != nil {
+		// 			return fmt.Errorf("failed to hash file '%s': %w", fullPath, err)
+		// 		}
+		// 	}
+		// }
+		hashDir(currentDir)
 	
 		return nil
 	},
