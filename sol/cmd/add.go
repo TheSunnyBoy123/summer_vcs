@@ -12,7 +12,7 @@ func hashChild(dir string) error {
 }
 
 //function makes the file content, saves, then return hash
-func hashDir(dir string) error { 
+func hashDir(dir string) (string, error) { 
 	// recursive function that first goes through all children directories and files, saving each file's hash to a list so that later we can create the object file for each directory
 	// structure for a hashDir object file:
 	// Tree <length of file>\0
@@ -23,25 +23,43 @@ func hashDir(dir string) error {
 	entries, _ := ioutil.ReadDir(dir)
 	for _, entry := range entries {
 		fullPath := filepath.Join(dir, entry.Name())
-
-		if entry.IsDir() {
+		lines := []string{}
+		contents := "Tree "
+		if entry.IsDir() { //this is a directory
 			// need to create a tree object
-			// contents := "Tree "
 			if entry.Name() == ".sol" {
 				continue
 			}
 			fmt.Println("Hashing child directory: ", fullPath)
-			hashDir(fullPath)
+			objHash, _ := hashDir(fullPath)
+			//add objhash to lines
+			lines = append(lines, "Tree " + objHash + "\x00")
 		} else {
+			// If the entry is a file
 			fmt.Println("Hashing child file: ", fullPath)
+			objHash := hashFile(fullPath)
+			lines = append(lines, "Blob " + objHash + "\x00")
 		}
-	}
-	return nil
+		fmt.Println(lines)
+		toAdd := ""
+		// go through each item in lines
+		for _, item := range lines {
+			toAdd += item
+		}
+		fmt.Println("To add is: %s", toAdd)
+		size := len(toAdd)
+		contents += string(size) + "\x00" + toAdd
+		fmt.Println("Contents is: %s", contents)
+		hash := hashContents(contents)
+		fmt.Println("Hash is: %s", hash)
+		return hash, nil
 
+	}
 }
 
-func hashFile(dir string) error {
-	fmt.Println("Hashing file: ", dir)
+func hashFile(dir string) (string, error) {
+	// fmt.Println("Hashing file: ", dir)
+	
 	return nil
 }
 
@@ -79,7 +97,7 @@ var addCmd = &cobra.Command{
 		// 		}
 		// 	}
 		// }
-		
+
 		// we have to save this with the header commit:
 		hashDir(currentDir)
 	
