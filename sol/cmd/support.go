@@ -118,3 +118,14 @@ func compress(contents string) string {
 	return compressedContent.String()
 }
 
+func decompress(contents string) string {
+	var decompressedContent bytes.Buffer
+	r, err := zlib.NewReader(bytes.NewBufferString(contents))
+	if err != nil {
+		log.Fatalf("Failed to decompress contents: %s", err)
+	}
+	defer r.Close()
+	decompressedContent.ReadFrom(r)
+	return decompressedContent.String()
+}
+

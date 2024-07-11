@@ -21,14 +21,13 @@ to quickly create a Cobra application.`,
 			return
 		}
 		fmt.Println("catFile called with hash: ", args[0])
-		hash := args[0]
-		if fileExists(".sol/objects/" + hash[:2] + "/" + hash[2:]) {
-			contents := readFile(".sol/objects/" + hash[:2] + "/" + hash[2:])
-
-			fmt.Println(contents)
-		} else {
-			fmt.Println("File does not exist")
-		}
+		// hash := args[0]
+		fmt.Println(compress("testcontent"))
+		fmt.Println()
+		// if fileExists(".sol/objects/" + hash[:2] + "/" + hash[2:]) {
+		// 	contents := readFile(".sol/objects/" + hash[:2] + "/" + hash[2:])
+		// 	fmt.Println(contents)
+		// }
 	},
 }
 

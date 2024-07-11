@@ -24,20 +24,20 @@ func hashDir(dir string) (string, error) {
 	for _, entry := range entries {
 		fullPath := filepath.Join(dir, entry.Name())
 		lines := []string{}
-		contents := "Tree "
 		if entry.IsDir() { //this is a directory
 			// need to create a tree object
-			if entry.Name() == ".sol" {
+			if entry.Name() == ".sol" { //skip the sol directory
 				continue
 			}
-			fmt.Println("Hashing child directory: ", fullPath)
-			objHash, _ := hashDir(fullPath)
+
+			fmt.Println("Hashing child directory: ", fullPath) //debug line
+			objHash, _ := hashDir(fullPath) // get this tree obj created and saved + objHash returned
 			//add objhash to lines
 			lines = append(lines, "Tree " + objHash + "\x00")
 		} else {
 			// If the entry is a file
 			fmt.Println("Hashing child file: ", fullPath)
-			objHash := hashFile(fullPath)
+			objHash, _ := hashFile(fullPath) //get objec
 			lines = append(lines, "Blob " + objHash + "\x00")
 		}
 		fmt.Println(lines)
@@ -46,21 +46,40 @@ func hashDir(dir string) (string, error) {
 		for _, item := range lines {
 			toAdd += item
 		}
+		
 		fmt.Println("To add is: %s", toAdd)
+		
 		size := len(toAdd)
-		contents += string(size) + "\x00" + toAdd
-		fmt.Println("Contents is: %s", contents)
+		contents := "Tree " + string(size) + "\x00" + toAdd
+		
+		fmt.Println("Contents is: ", contents)
+		
+		contents = compress(contents)
 		hash := hashContents(contents)
+		
 		fmt.Println("Hash is: %s", hash)
-		return hash, nil
 
+		createDir(".sol/objects/" + hash[:2])
+		writeFile(".sol/objects/" + hash[:2] + "/" + hash[2:], contents)
+
+		return hash, nil
 	}
+	return "", nil
 }
 
 func hashFile(dir string) (string, error) {
-	// fmt.Println("Hashing file: ", dir)
-	
-	return nil
+	contents := readFile(dir)
+	size := len(contents)
+
+	contents = "Blob " + string(size) + "\x00" + contents
+	contents = compress(contents)
+
+	hash := hashContents(contents)
+
+	createDir(".sol/objects/" + hash[:2])
+	writeFile(".sol/objects/" + hash[:2] + "/" + hash[2:], contents)
+
+	return hash, nil
 }
 
 // addCmd represents the add command
