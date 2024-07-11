@@ -40,7 +40,6 @@ func hashDir(dir string) (string, error) {
 			objHash, _ := hashFile(fullPath) //get objec
 			lines = append(lines, "Blob " + objHash + "\x00")
 		}
-		fmt.Println(lines)
 		toAdd := ""
 		// go through each item in lines
 		for _, item := range lines {
@@ -49,9 +48,12 @@ func hashDir(dir string) (string, error) {
 		
 		// fmt.Println("To add is: %s", toAdd)
 		
-		size := len(toAdd)
-		contents := "Tree " + string(size) + "\x00" + toAdd
-		
+		size := fmt.Sprintf("%d", len(toAdd))
+		// fmt.Println("Size is: ", size)
+		// fmt.Println("To add is: ", toAdd)
+		contents := "Tree " + size + "\x00" + toAdd
+		fmt.Println("For directory: ", dir, " contenst is: ", contents)
+
 		// fmt.Println("Contents is: ", contents)
 		
 		contents = compress(contents)
