@@ -36,7 +36,7 @@ func hashDir(dir string) (string, error) {
 			lines = append(lines, "Tree " + objHash + "\x00")
 		} else {
 			// If the entry is a file
-			fmt.Println("Hashing child file: ", fullPath)
+			// fmt.Println("Hashing child file: ", fullPath)
 			objHash, _ := hashFile(fullPath) //get objec
 			lines = append(lines, "Blob " + objHash + "\x00")
 		}
@@ -47,20 +47,21 @@ func hashDir(dir string) (string, error) {
 			toAdd += item
 		}
 		
-		fmt.Println("To add is: %s", toAdd)
+		// fmt.Println("To add is: %s", toAdd)
 		
 		size := len(toAdd)
 		contents := "Tree " + string(size) + "\x00" + toAdd
 		
-		fmt.Println("Contents is: ", contents)
+		// fmt.Println("Contents is: ", contents)
 		
 		contents = compress(contents)
 		hash := hashContents(contents)
 		
-		fmt.Println("Hash is: %s", hash)
+		// fmt.Println("Hash is: %s", hash)
 
 		createDir(".sol/objects/" + hash[:2])
 		writeFile(".sol/objects/" + hash[:2] + "/" + hash[2:], contents)
+		fmt.Println("Directory,", dir, " has been hashed with hash: ", hash)
 
 		return hash, nil
 	}
@@ -78,6 +79,8 @@ func hashFile(dir string) (string, error) {
 
 	createDir(".sol/objects/" + hash[:2])
 	writeFile(".sol/objects/" + hash[:2] + "/" + hash[2:], contents)
+
+	fmt.Println("File,", dir, " has been hashed with hash: ", hash)
 
 	return hash, nil
 }
