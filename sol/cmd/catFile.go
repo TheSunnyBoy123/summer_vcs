@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"fmt"
-
+	"bytes"
 	"github.com/spf13/cobra"
 )
 
@@ -21,13 +21,19 @@ to quickly create a Cobra application.`,
 			return
 		}
 		fmt.Println("catFile called with hash: ", args[0])
-		// hash := args[0]
-		fmt.Println(compress("testcontent"))
-		fmt.Println()
-		// if fileExists(".sol/objects/" + hash[:2] + "/" + hash[2:]) {
-		// 	contents := readFile(".sol/objects/" + hash[:2] + "/" + hash[2:])
-		// 	fmt.Println(contents)
-		// }
+        hash := args[0]
+        if fileExists(".sol/objects/" + hash[:2] + "/" + hash[2:]) {
+            contents := readFile(".sol/objects/" + hash[:2] + "/" + hash[2:])
+            contents = decompress(contents)
+            // Convert contents to []byte before splitting
+            elements := bytes.Split([]byte(contents), []byte("\x00"))
+            // Iterate through the elements and print them
+            for _, element := range elements {
+                fmt.Println(string(element))
+            }
+        } else {
+			fmt.Println("File does not exist")
+		}
 	},
 }
 
