@@ -13,6 +13,8 @@ import (
 )
 
 
+// file functions
+
 func fileExists(path string) bool {
 	info, err := os.Stat(path)
 	if os.IsNotExist(err) {
@@ -25,21 +27,7 @@ func deleteFile(path string) error {
 	if err := os.Remove(path); err != nil {
 		return err
 	}
-}
-
-func notInitialisedRepo(dir string) bool {
-	for {
-		dir = filepath.Dir(dir)
-		if _, err := os.Stat(filepath.Join(dir, ".sol")); err == nil {
-			// .sol directory exists in this directory
-			return false
-		}
-		if dir == "/" || dir == "." {
-			//reached root directory
-			break
-		}
-	}
-	return true
+	return nil
 }
 
 func createFiles(fileDir []string) {
@@ -50,6 +38,46 @@ func createFiles(fileDir []string) {
 		}
 	}
 }
+
+func writeFile(dir string, contents string) {
+	file, err := os.Create(dir)
+	if err != nil {
+		log.Fatalf("Failed creating file: %s", err)
+	}
+	defer file.Close()
+	_, err = file.WriteString(contents)
+	if err != nil {
+		log.Fatalf("Failed writing to file: %s", err)
+	}
+}
+
+func readFile(dir string) string{
+	file, err := os.Open(dir)
+	if err != nil {
+		log.Fatalf("Failed opening file: %s", err)
+	}
+	defer file.Close()
+	contents, err := ioutil.ReadAll(file)
+	if err != nil {
+		log.Fatalf("Failed reading file: %s", err)
+	}
+	return string(contents)
+}
+
+func writeToFile(dir string, contents string) {
+	file, err := os.OpenFile(dir, os.O_APPEND|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Fatalf("Failed opening file: %s", err)
+	}
+	defer file.Close()
+	_, err = file.WriteString(contents + "\n")
+	if err != nil {
+		log.Fatalf("Failed writing to file: %s", err)
+	}
+}
+
+
+// dir functions
 
 func initializeDirs(dirs []string) {
 	for _, dir := range dirs {
@@ -83,32 +111,7 @@ func deleteDir(dir string) error {
 }
 
 
-
-func writeFile(dir string, contents string) {
-	file, err := os.Create(dir)
-	if err != nil {
-		log.Fatalf("Failed creating file: %s", err)
-	}
-	defer file.Close()
-	_, err = file.WriteString(contents)
-	if err != nil {
-		log.Fatalf("Failed writing to file: %s", err)
-	}
-}
-
-func readFile(dir string) string{
-	file, err := os.Open(dir)
-	if err != nil {
-		log.Fatalf("Failed opening file: %s", err)
-	}
-	defer file.Close()
-	contents, err := ioutil.ReadAll(file)
-	if err != nil {
-		log.Fatalf("Failed reading file: %s", err)
-	}
-	return string(contents)
-}
-
+// sha functions 
 func hashContents(contents string) string {
 	// hash contents using sha1 library
 	hash := sha1.New()
@@ -136,3 +139,17 @@ func decompress(contents string) string {
 	return decompressedContent.String()
 }
 
+func notInitialisedRepo(dir string) bool {
+	for {
+		dir = filepath.Dir(dir)
+		if _, err := os.Stat(filepath.Join(dir, ".sol")); err == nil {
+			// .sol directory exists in this directory
+			return false
+		}
+		if dir == "/" || dir == "." {
+			//reached root directory
+			break
+		}
+	}
+	return true
+}

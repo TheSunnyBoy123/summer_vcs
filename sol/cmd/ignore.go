@@ -10,43 +10,54 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// ignoreCmd represents the ignore command
+
+
 var ignoreCmd = &cobra.Command{
 	Use:   "ignore",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Adds files and directories to the ignore list",
+	Long: `Adds files and directories to the ignore list, stored in .solignore file. 
+	When the add argument is used, the .solignore file is checked for all dirs and files to be ignored. 
+	When the rm argument is used, the file is removed from the ignore list.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		//if argument rm is passed, remove the file from the ignore list
-		if len(args) == 1 && args[0] == "rm" {
-			fmt.Println("Removing file from ignore list")
-			if fileExists(".sol/.solignore") {
-				err := deleteFile(".sol/.solignore")
-				if err != nil {
-					fmt.Println(err)
-				} else {
-					fmt.Println("File removed from ignore list ")
-				}
+		if !fileExists(".solignore") {
+			createFiles([]string{".solignore"})
+		}
+	},
+}
+
+var addIgnoreCmd = &cobra.Command{
+	Use:  "add",
+	Short: "Add files and directories to the .solignore file",
+	Long: `Add files and directories to the .solignore file, to be ignored by the add command.
+	All passed arguments along with this will be added to the .solignore at one go.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		if !fileExists(".solignore") {
+			createFiles([]string{".solignore"})
+		}
+		for _, arg := range args {
+			writeToFile(".solignore", arg)
+		}
+	},
+}
+
+var rmCmd = &cobra.Command{
+	Use:  "rm",
+	Short: "Remove the .solignore file",
+	Long: `Remove the .solignore file.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		if fileExists(".solignore") {
+			err := deleteFile(".solignore")
+			if err != nil {
+				fmt.Println("Failed to remove .solignore file")
+			} else {
+				fmt.Println(".solignore file removed")
 			}
 		}
-
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(ignoreCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// ignoreCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// ignoreCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	ignoreCmd.AddCommand(rmCmd)
+	ignoreCmd.AddCommand(addIgnoreCmd)
 }
