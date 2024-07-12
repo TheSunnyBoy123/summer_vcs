@@ -21,16 +21,17 @@ func hashDir(dir string) (string, error) {
 	// ...
 
 	entries, _ := ioutil.ReadDir(dir)
+	lines := []string{}
 	for _, entry := range entries {
 		fullPath := filepath.Join(dir, entry.Name())
-		lines := []string{}
+		
 		if entry.IsDir() { //this is a directory
 			// need to create a tree object
 			if entry.Name() == ".sol" { //skip the sol directory
 				continue
 			}
 
-			fmt.Println("Hashing child directory: ", fullPath) //debug line
+			// fmt.Println("Hashing child directory: ", fullPath) //debug line
 			objHash, _ := hashDir(fullPath) // get this tree obj created and saved + objHash returned
 			//add objhash to lines
 			lines = append(lines, "Tree " + objHash + "\x00")
@@ -40,34 +41,32 @@ func hashDir(dir string) (string, error) {
 			objHash, _ := hashFile(fullPath) //get objec
 			lines = append(lines, "Blob " + objHash + "\x00")
 		}
-		toAdd := ""
-		// go through each item in lines
-		for _, item := range lines {
-			toAdd += item
-		}
-		
-		// fmt.Println("To add is: %s", toAdd)
-		
-		size := fmt.Sprintf("%d", len(toAdd))
-		// fmt.Println("Size is: ", size)
-		// fmt.Println("To add is: ", toAdd)
-		contents := "Tree " + size + "\x00" + toAdd
-		fmt.Println("For directory: ", dir, " contenst is: ", contents)
-
-		// fmt.Println("Contents is: ", contents)
-		
-		contents = compress(contents)
-		hash := hashContents(contents)
-		
-		// fmt.Println("Hash is: %s", hash)
-
-		createDir(".sol/objects/" + hash[:2])
-		writeFile(".sol/objects/" + hash[:2] + "/" + hash[2:], contents)
-		fmt.Println("Directory,", dir, " has been hashed with hash: ", hash)
-
-		return hash, nil
 	}
-	return "", nil
+	toAdd := ""
+	// go through each item in lines
+	for _, item := range lines {
+		toAdd += item
+	}
+	// fmt.Println("To add is: %s", toAdd)
+		
+	size := fmt.Sprintf("%d", len(toAdd))
+	// fmt.Println("Size is: ", size)
+	// fmt.Println("To add is: ", toAdd)
+	contents := "Tree " + size + "\x00" + toAdd
+	// fmt.Println("For directory: ", dir, " contents is: ", contents)
+
+	// fmt.Println("Contents is: ", contents)
+	
+	contents = compress(contents)
+	hash := hashContents(contents)
+	
+	// fmt.Println("Hash is: %s", hash)
+
+	createDir(".sol/objects/" + hash[:2])
+	writeFile(".sol/objects/" + hash[:2] + "/" + hash[2:], contents)
+	fmt.Println("Directory,", dir, " has been hashed with hash: ", hash)
+
+	return hash, nil
 }
 
 func hashFile(dir string) (string, error) {
