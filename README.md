@@ -21,6 +21,25 @@ Creates a sol repository in the given directory. Default directory is the curren
 ## Description
 Creates a sol repository in the given directory. Default directory is the current directory.
 
+## `cat-file`
+
+## Synopsis
+
+> **sol cat-file** **<object_sha>**
+
+## Description
+Creates a sol repository in the given directory. Default directory is the current directory.
+
+
+## `ignore`
+
+## Synopsis
+
+> **sol ignore** **<[\<directory>]/[\<files>]** [rm|remove] []
+
+## Description
+Creates a sol repository in the given directory. Default directory is the current directory.
+
 
 ## `stage`
 

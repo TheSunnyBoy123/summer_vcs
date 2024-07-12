@@ -21,6 +21,12 @@ func fileExists(path string) bool {
 	return !info.IsDir()
 }
 
+func deleteFile(path string) error {
+	if err := os.Remove(path); err != nil {
+		return err
+	}
+}
+
 func notInitialisedRepo(dir string) bool {
 	for {
 		dir = filepath.Dir(dir)
@@ -90,7 +96,7 @@ func writeFile(dir string, contents string) {
 	}
 }
 
-func readFile (dir string) string{
+func readFile(dir string) string{
 	file, err := os.Open(dir)
 	if err != nil {
 		log.Fatalf("Failed opening file: %s", err)

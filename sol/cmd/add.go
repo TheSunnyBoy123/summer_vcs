@@ -20,6 +20,10 @@ func hashDir(dir string) (string, error) {
 	// ChildType <obj_sha>\0
 	// ...
 
+
+	// files to ignore are stored in .solignore
+	contents_solignore := readFile(".sol/.solignore")
+
 	entries, _ := ioutil.ReadDir(dir)
 	lines := []string{}
 	for _, entry := range entries {
