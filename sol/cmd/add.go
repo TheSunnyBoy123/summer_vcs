@@ -38,7 +38,7 @@ func hashDir(dir string) (string, error) {
 		} else {
 			// If the entry is a file
 			// fmt.Println("Hashing child file: ", fullPath)
-			objHash, _ := hashFile(fullPath) //get objec
+			objHash, _ := hashFile(fullPath) //get object
 			lines = append(lines, "Blob " + objHash + "\x00")
 		}
 	}
@@ -122,7 +122,23 @@ var addCmd = &cobra.Command{
 		// }
 
 		// we have to save this with the header commit:
-		hashDir(currentDir)
+		//if no args, then we are in the root directory
+		if len(args) == 0 {
+			// fmt.Println("Hashing root directory")
+			hashDir(currentDir)
+			return nil
+		} else {
+			// all the args are treated as as directories and items to be added
+			for _, arg := range args {
+				if fileExists(arg) {
+					hashFile(arg)
+				} else if dirExists(arg) {
+					hashDir(arg)
+				} else {
+					fmt.Println("File or directory: ", arg, " does not exist")
+				}
+			}
+		}
 	
 		return nil
 	},

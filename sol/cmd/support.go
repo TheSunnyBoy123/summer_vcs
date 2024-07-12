@@ -13,11 +13,12 @@ import (
 )
 
 
-func fileExists(dir string) bool {
-	if _, err := os.Stat(dir); os.IsNotExist(err) {
+func fileExists(path string) bool {
+	info, err := os.Stat(path)
+	if os.IsNotExist(err) {
 		return false
 	}
-	return true
+	return !info.IsDir()
 }
 
 func notInitialisedRepo(dir string) bool {
