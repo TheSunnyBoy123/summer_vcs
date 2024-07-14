@@ -38,7 +38,7 @@ var initCmd = &cobra.Command{
 			wd, _ := os.Getwd()
 			if notInitialisedRepo(wd) {
 				initializeDirs([]string{solMainDir, solCommits, solBranches, solObjects})
-				createFiles([]string{"./.sol/stagedChanges.txt"})
+				createFiles([]string{"./.sol/stagedChanges"})
 				fmt.Println("Repository initialised")
 			} else {
 				fmt.Println("Repository already exists for this directory")
