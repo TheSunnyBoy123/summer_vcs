@@ -16,8 +16,8 @@ func hashDir(dir string) (string, error) {
 	// recursive function that first goes through all children directories and files, saving each file's hash to a list so that later we can create the object file for each directory
 	// structure for a hashDir object file:
 	// Tree <length of file>\0
-	// ChildType <obj_sha>\0
-	// ChildType <obj_sha>\0
+	// Tree <obj_sha> name\0
+	// Blob <obj_sha> name\0
 	// ...
 
 
@@ -38,12 +38,15 @@ func hashDir(dir string) (string, error) {
 			// fmt.Println("Hashing child directory: ", fullPath) //debug line
 			objHash, _ := hashDir(fullPath) // get this tree obj created and saved + objHash returned
 			//add objhash to lines
-			lines = append(lines, "Tree " + objHash + "\x00")
+			//name of dir
+			nameDir := entry.Name()
+			lines = append(lines, "Tree " + objHash + " " + nameDir +"\x00")
 		} else {
 			// If the entry is a file
 			// fmt.Println("Hashing child file: ", fullPath)
 			objHash, _ := hashFile(fullPath) //get object
-			lines = append(lines, "Blob " + objHash + "\x00")
+			fileName := entry.Name()
+			lines = append(lines, "Blob " + objHash + " " + fileName + "\x00")
 		}
 	}
 	toAdd := ""
