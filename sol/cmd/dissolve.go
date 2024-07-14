@@ -23,20 +23,25 @@ var dissolveCmd = &cobra.Command{
 				if err := deleteDir("./.sol"); err != nil {
 					fmt.Println(err)
 				}
+				if fileExists(".solignore") {
+					if err := deleteFile(".solignore"); err != nil {
+						fmt.Println(err)
+					}
+				}
 				fmt.Println("Repository dissolved")
 			} else {
 				fmt.Println("Sol was not initialised in the current directory.")
 			}
-		case 1:
-			if dirExists(args[0] + "/.sol") {
-				fmt.Println("Dissolving the provided directory")
-				if err := deleteDir(args[0] + "/.sol"); err != nil {
-					fmt.Println(err)
-				}
-				fmt.Println("Repository dissolved")
-			} else {
-				fmt.Println("Directory does not exist")
-			}
+		// case 1:
+		// 	if dirExists(args[0] + "/.sol") {
+		// 		fmt.Println("Dissolving the provided directory")
+		// 		if err := deleteDir(args[0] + "/.sol"); err != nil {
+		// 			fmt.Println(err)
+		// 		}
+		// 		fmt.Println("Repository dissolved")
+		// 	} else {
+		// 		fmt.Println("Directory does not exist")
+		// 	}
 		default:
 			fmt.Print(excessArgsError)
 			fmt.Print("Usage: " + cmd.Use + "\n")
