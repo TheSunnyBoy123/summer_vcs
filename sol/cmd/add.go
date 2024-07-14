@@ -132,15 +132,19 @@ var addCmd = &cobra.Command{
 		//if no args, then we are in the root directory
 		if len(args) == 0 {
 			// fmt.Println("Hashing root directory")
-			hashDir(currentDir)
+			hash, _ := hashDir(currentDir)
+			writeFile(".sol/stagedChanges", hash +  " " + currentDir + "\n")
 			return nil
 		} else {
+			// stagingContents := ""
 			// all the args are treated as as directories and items to be added
-			for _, arg := range args {
+			for _, arg := range args { //grab each arg
 				if fileExists(arg) {
-					hashFile(arg)
+					hash, _ := hashFile(arg)
+					writeToFile(".sol/stagedChanges", "Blob " + hash + " " + arg)
 				} else if dirExists(arg) {
-					hashDir(arg)
+					hash, _ := hashDir(arg)
+					writeToFile(".sol/stagedChanges", "Tree " + hash + " " + arg)
 				} else {
 					fmt.Println("File or directory: ", arg, " does not exist")
 				}

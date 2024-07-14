@@ -8,6 +8,7 @@ import (
 
 var t bool
 var p bool
+var s bool
 
 var catFileCmd = &cobra.Command{
 	Use:   "cat-file",
@@ -25,18 +26,27 @@ to quickly create a Cobra application.`,
 		}
 		// fmt.Println("catFile called with hash: ", args[0])
         hash := args[0]
+		// TODO: add ability to access file just from 5 characters of hash
 		filePath := ".sol/objects/" + hash[:2] + "/" + hash[2:]
 		if fileExists(filePath) {
 			contents := decompress(readFile(filePath))
 			elements := bytes.Split([]byte(contents), []byte("\x00"))
-			if p {
-				for _, element := range elements {
+			if t { // type case
+				firstLine := elements[0]
+				words := bytes.Split(firstLine, []byte(" "))
+				fmt.Println(string(words[0]))
+			}
+			if p { // pretty print case
+				for _, element := range elements[1:] {
 					fmt.Println(string(element))
 				}
 			}
-			if t {
-				fmt.Println(string(elements[0]))
+			if s { // size case
+				firstLine := elements[0]
+				words := bytes.Split(firstLine, []byte(" "))
+				fmt.Println(string(words[1]))
 			}
+			
 		} else {
 			fmt.Println("File does not exist")
 		}
@@ -49,5 +59,6 @@ func init() {
 
 	catFileCmd.Flags().BoolVarP(&t, "type", "t", false, "Prints the type of the object")
 	catFileCmd.Flags().BoolVarP(&p, "pretty", "p", false, "Pretty print the contents of the object")
+	catFileCmd.Flags().BoolVarP(&s, "size", "s", false, "Prints the size of the object")
 
 }
