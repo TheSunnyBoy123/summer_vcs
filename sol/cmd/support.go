@@ -139,6 +139,10 @@ func decompress(contents string) string {
 	return decompressedContent.String()
 }
 
+
+
+// misc functions
+
 func notInitialisedRepo(dir string) bool {
 	for {
 		dir = filepath.Dir(dir)
@@ -152,4 +156,13 @@ func notInitialisedRepo(dir string) bool {
 		}
 	}
 	return true
+}
+
+func contains(slice []string, element string) bool {
+	for _, i := range slice {
+		if i == element {
+			return true
+		}
+	}
+	return false
 }

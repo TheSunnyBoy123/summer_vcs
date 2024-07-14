@@ -7,9 +7,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func hashChild(dir string) error { 
-	return nil
-}
+var toIgnore = []string{".sol", ".solignore"}
 
 //function makes the file content, saves, then return hash
 func hashDir(dir string) (string, error) { 
@@ -28,12 +26,14 @@ func hashDir(dir string) (string, error) {
 	lines := []string{}
 	for _, entry := range entries {
 		fullPath := filepath.Join(dir, entry.Name())
+
+		if contains(toIgnore, entry.Name()){ //skip the sol directory
+			// fmt.Println("Skipping directory: ", fullPath)
+			continue
+		}
 		
 		if entry.IsDir() { //this is a directory
 			// need to create a tree object
-			if entry.Name() == ".sol" { //skip the sol directory
-				continue
-			}
 
 			// fmt.Println("Hashing child directory: ", fullPath) //debug line
 			objHash, _ := hashDir(fullPath) // get this tree obj created and saved + objHash returned
