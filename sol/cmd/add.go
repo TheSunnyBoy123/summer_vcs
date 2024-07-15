@@ -5,9 +5,11 @@ import (
 	"io/ioutil"
 	"path/filepath"
 	"github.com/spf13/cobra"
+	"strings"
 )
 
-var toIgnore = []string{".sol", ".solignore"}
+var filesToIgnore = []string{".sol", ".sol/.solignore"}
+var force bool
 
 //function makes the file content, saves, then return hash
 func hashDir(dir string) (string, error) { 
@@ -27,7 +29,7 @@ func hashDir(dir string) (string, error) {
 	for _, entry := range entries {
 		fullPath := filepath.Join(dir, entry.Name())
 
-		if contains(toIgnore, entry.Name()){ //skip the sol directory
+		if contains(filesToIgnore, entry.Name()){ //skip the sol directory
 			// fmt.Println("Skipping directory: ", fullPath)
 			continue
 		}
@@ -71,7 +73,7 @@ func hashDir(dir string) (string, error) {
 
 	createDir(".sol/objects/" + hash[:2])
 	writeFile(".sol/objects/" + hash[:2] + "/" + hash[2:], contents)
-	fmt.Println("Directory,", dir, " has been hashed with hash: ", hash)
+	fmt.Println(dir, " hash: ", hash)
 
 	return hash, nil
 }
@@ -85,11 +87,15 @@ func hashFile(dir string) (string, error) {
 
 	hash := hashContents(contents)
 
-	createDir(".sol/objects/" + hash[:2])
-	writeFile(".sol/objects/" + hash[:2] + "/" + hash[2:], contents)
 
-	fmt.Println("File,", dir, " has been hashed with hash: ", hash)
+	if dirExists(".sol/objects/" + hash[:2]) {
+		writeFile(".sol/objects/" + hash[:2] + "/" + hash[2:], contents)
+	} else {
+		createDir(".sol/objects/" + hash[:2])
+		writeFile(".sol/objects/" + hash[:2] + "/" + hash[2:], contents)
+	}
 
+	fmt.Println(dir, " hash: ", hash)
 	return hash, nil
 }
 
@@ -130,10 +136,24 @@ var addCmd = &cobra.Command{
 
 		// we have to save this with the header commit:
 		//if no args, then we are in the root directory
+
+		filesToIgnore := ""
+
+		if fileExists(solignorePath) {
+			filesToIgnore = readFile(solignorePath)
+			filesToIgnore := strings.Split(filesToIgnore, "\n")
+			fmt.Println("Files to ignore: ", filesToIgnore)
+		}
+		if filesToIgnore == "" {
+			filesToIgnore := []string{".sol", ".sol/.solignore"}
+		} else {
+			filesToIgnore = append(filesToIgnore, ".sol", ".sol/.solignore")
+		}
+		
 		if len(args) == 0 {
 			// fmt.Println("Hashing root directory")
 			hash, _ := hashDir(currentDir)
-			writeFile(".sol/stagedChanges", hash +  " " + currentDir + "\n")
+			writeFile(".sol/stagedChanges", "Tree " + hash +  " " + currentDir + "\n")
 			return nil
 		} else {
 			// stagingContents := ""
@@ -157,4 +177,5 @@ var addCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(addCmd)
+	rootCmd.Flags().BoolVarP(&force, "force", "f", false, "force add otherwise ignored files")
 }

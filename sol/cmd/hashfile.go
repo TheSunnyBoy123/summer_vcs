@@ -6,6 +6,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var write bool
+
 // hashObjectCmd represents the hashObject command
 var hashObjectCmd = &cobra.Command{
 	Use:   "hash-file",
@@ -16,29 +18,30 @@ and usage of using your command. For example:
 Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
+	// exactly 1 arg allowed
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		// fmt.Println("sha1 of 'test' ", hashContents("test"))
-		//only one argument allowed
-		if len(args) != 1 {
-			fmt.Println("Usage: hash-file <filename>")
-			return
-		}
-		// fmt.Println("hashObject called with filename: ", args[0])
-		file := args[0]
-		if fileExists(file) {
-			contents := readFile(file)
-			size := len(contents)
-			newContents := "Blob " + fmt.Sprint(size) + "\x00" + contents
-			newContents = compress(newContents)
-			hash := hashContents(newContents)
-			createDir(".sol/objects/"+hash[:2])
-			writeFile(".sol/objects/"+hash[:2]+"/"+hash[2:], newContents)
-		} else {
-			fmt.Println("File does not exist")
+		contents := readFile(dir)
+		size := len(contents)
+
+		contents = "Blob " + string(size) + "\x00" + contents
+		contents = compress(contents)
+
+		hash := hashContents(contents)
+		fmt.Println(hash)
+
+		if write {
+			if dirExists(".sol/objects/" + hash[:2]) {
+				writeFile(".sol/objects/" + hash[:2] + "/" + hash[2:], contents)
+			} else {
+				createDir(".sol/objects/" + hash[:2])
+				writeFile(".sol/objects/" + hash[:2] + "/" + hash[2:], contents)
+			}
 		}
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(hashObjectCmd)
+	hashObjectCmd.Flags().BoolVarP(&write, "write", "w", false, "Write the object to objects directory")
 }

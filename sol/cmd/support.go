@@ -13,6 +13,8 @@ import (
 )
 
 
+const solignorePath = ".sol/.solignore"
+
 // file functions
 
 func fileExists(path string) bool {
