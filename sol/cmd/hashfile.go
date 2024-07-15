@@ -21,6 +21,9 @@ to quickly create a Cobra application.`,
 	// exactly 1 arg allowed
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
+		objHash := args[0]
+		dir := ".sol/objects/" + objHash[:2] + "/" + objHash[2:]
+		
 		contents := readFile(dir)
 		size := len(contents)
 
