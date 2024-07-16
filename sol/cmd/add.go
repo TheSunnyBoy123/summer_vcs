@@ -8,8 +8,8 @@ import (
 	"strings"
 )
 
-var filesToIgnore = []string{".sol", ".sol/.solignore"}
 var force bool
+var filesToIgnore = []string{solPath, solignorePath}
 
 //function makes the file content, saves, then return hash
 func hashDir(dir string) (string, error) { 
@@ -46,9 +46,11 @@ func hashDir(dir string) (string, error) {
 		} else {
 			// If the entry is a file
 			// fmt.Println("Hashing child file: ", fullPath)
-			objHash, _ := hashFile(fullPath) //get object
-			fileName := entry.Name()
-			lines = append(lines, "Blob " + objHash + " " + fileName + "\x00")
+			objHash, err := hashFile(fullPath) //get object
+			if err == nil{
+				fileName := entry.Name()
+				lines = append(lines, "Blob " + objHash + " " + fileName + "\x00")
+			}
 		}
 	}
 	toAdd := ""
@@ -71,14 +73,21 @@ func hashDir(dir string) (string, error) {
 	
 	// fmt.Println("Hash is: %s", hash)
 
-	createDir(".sol/objects/" + hash[:2])
-	writeFile(".sol/objects/" + hash[:2] + "/" + hash[2:], contents)
+	createDir(objectsPath + hash[:2])
+	writeFile(objectsPath + hash[:2] + "/" + hash[2:], contents)
 	fmt.Println(dir, " hash: ", hash)
 
 	return hash, nil
 }
 
 func hashFile(dir string) (string, error) {
+	fileName := filepath.Base(dir)
+
+	if contains(filesToIgnore, fileName) {
+		fmt.Println("Ignoring file: ", fileName)
+		// return empty string and error code 1
+		return "", fmt.Errorf("%d", 1)
+	}
 	contents := readFile(dir)
 	size := len(contents)
 
@@ -88,11 +97,11 @@ func hashFile(dir string) (string, error) {
 	hash := hashContents(contents)
 
 
-	if dirExists(".sol/objects/" + hash[:2]) {
-		writeFile(".sol/objects/" + hash[:2] + "/" + hash[2:], contents)
+	if dirExists(objectsPath + hash[:2]) {
+		writeFile(objectsPath + hash[:2] + "/" + hash[2:], contents)
 	} else {
-		createDir(".sol/objects/" + hash[:2])
-		writeFile(".sol/objects/" + hash[:2] + "/" + hash[2:], contents)
+		createDir(objectsPath + hash[:2])
+		writeFile(objectsPath + hash[:2] + "/" + hash[2:], contents)
 	}
 
 	fmt.Println(dir, " hash: ", hash)
@@ -107,48 +116,16 @@ var addCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error{
 		currentDir := "."
 
-
-		// entries, err := ioutil.ReadDir(currentDir)
-		// if err != nil {
-		// 	return fmt.Errorf("failed to read directory: %w", err)
-		// }
-		
-		// for _, entry := range entries {
-		// 	fullPath := filepath.Join(currentDir, entry.Name())
-	
-		// 	if entry.IsDir() {
-		// 		if entry.Name() == ".sol" {
-		// 			continue
-		// 		}
-
-		// 		err := hashDir(fullPath)
-		// 		if err != nil {
-		// 			return fmt.Errorf("failed to hash directory '%s': %w", fullPath, err)
-		// 		}
-		// 	} else {
-		// 		// If the entry is a file
-		// 		err := hashFile(fullPath) 
-		// 		if err != nil {
-		// 			return fmt.Errorf("failed to hash file '%s': %w", fullPath, err)
-		// 		}
-		// 	}
-		// }
-
-		// we have to save this with the header commit:
-		//if no args, then we are in the root directory
-
-		filesToIgnore := ""
-
 		if fileExists(solignorePath) {
-			filesToIgnore = readFile(solignorePath)
-			filesToIgnore := strings.Split(filesToIgnore, "\n")
+			contents := readFile(solignorePath)
+			filesToIgnore = append(filesToIgnore, strings.Split(contents, "\n")...)
 			fmt.Println("Files to ignore: ", filesToIgnore)
 		}
-		if filesToIgnore == "" {
-			filesToIgnore := []string{".sol", ".sol/.solignore"}
-		} else {
-			filesToIgnore = append(filesToIgnore, ".sol", ".sol/.solignore")
+
+		if force {
+			filesToIgnore = []string{".sol"}
 		}
+		fmt.Println("Files to ignore: ", filesToIgnore)
 		
 		if len(args) == 0 {
 			// fmt.Println("Hashing root directory")
@@ -170,7 +147,6 @@ var addCmd = &cobra.Command{
 				}
 			}
 		}
-	
 		return nil
 	},
 }

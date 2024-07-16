@@ -6,14 +6,29 @@ package cmd
 
 import (
 	"fmt"
-
 	"github.com/spf13/cobra"
+	"github.com/sergi/go-diff/diffmatchpatch"
 )
 
 var stat bool 
+var minimal bool
 
 func diff(obj1, obj2 string) {
-	// obj1Content := readFile(".sol/objects/" + obj1[:2] + "/" + obj1[2:])
+	obj1Content := decompress(readFile(".sol/objects/" + obj1[:2] + "/" + obj1[2:]))
+	obj2Content := decompress(readFile(".sol/objects/" + obj2[:2] + "/" + obj2[2:]))
+
+	
+	dmp := diffmatchpatch.New()
+
+	diffs := dmp.DiffMain(obj1Content, obj2Content, false)
+
+	fmt.Println(dmp.DiffPrettyText(diffs))
+
+	// if stat {
+	// 	fmt.Println(diff.Stats())
+	// } else {
+	// 	fmt.Println(diff)
+	// }
 }
 
 // diffCmd represents the diff command
@@ -38,4 +53,5 @@ var diffCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(diffCmd)
 	diffCmd.Flags().BoolVarP(&stat, "stat", "s", false, "Show the stats of the difference")
+	diffCmd.Flags().BoolVarP(&minimal, "minimal", "m", false, "Show the minimal difference")
 }

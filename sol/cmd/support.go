@@ -13,7 +13,9 @@ import (
 )
 
 
-const solignorePath = ".sol/.solignore"
+const solignorePath = ".solignore"
+const solPath = ".sol"
+const objectsPath = ".sol/objects"
 
 // file functions
 

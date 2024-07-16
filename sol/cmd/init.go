@@ -10,7 +10,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var verbose bool
 
 const (
 	solMainDir      = ".sol"
@@ -28,10 +27,6 @@ var initCmd = &cobra.Command{
 	Short: "Initialises sol within the provided directory",
 	Long: `Creates .sol directory as well as the metadata files required for sol to function.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if verbose {
-			fmt.Println("verbose asked for")
-			return nil
-		}
 		switch len(args) {
 		case 0:
 			//check no parent dir has .sol dir
@@ -60,7 +55,5 @@ var initCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(initCmd)
-	initCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "Print verbose output")
 	rootCmd.AddCommand(initCmd)
 }
