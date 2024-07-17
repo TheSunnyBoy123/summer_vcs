@@ -22,7 +22,7 @@ var hashObjectCmd = &cobra.Command{
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		objHash := args[0]
-		dir := ".sol/objects/" + objHash[:2] + "/" + objHash[2:]
+		dir := objectsPath + objHash[:2] + "/" + objHash[2:]
 
 		contents := readFile(dir)
 		size := len(contents)
@@ -34,11 +34,11 @@ var hashObjectCmd = &cobra.Command{
 		fmt.Println(hash)
 
 		if write {
-			if dirExists(".sol/objects/" + hash[:2]) {
-				writeFile(".sol/objects/" + hash[:2] + "/" + hash[2:], contents)
+			if dirExists(objectsPath + hash[:2]) {
+				writeFile(objectsPath + hash[:2] + "/" + hash[2:], contents)
 			} else {
-				createDir(".sol/objects/" + hash[:2])
-				writeFile(".sol/objects/" + hash[:2] + "/" + hash[2:], contents)
+				createDir(objectsPath + hash[:2])
+				writeFile(objectsPath + hash[:2] + "/" + hash[2:], contents)
 			}
 		}
 	},

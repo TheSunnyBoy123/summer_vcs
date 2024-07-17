@@ -11,91 +11,66 @@ import (
 var force bool
 var filesToIgnore = []string{solPath, solignorePath}
 
-//function makes the file content, saves, then return hash
-func hashDir(dir string) (string, error) { 
-	// recursive function that first goes through all children directories and files, saving each file's hash to a list so that later we can create the object file for each directory
-	// structure for a hashDir object file:
-	// Tree <length of file>\0
-	// Tree <obj_sha> name\0
-	// Blob <obj_sha> name\0
-	// ...
+func hashDir(dir string) (string, error) {
+	// file/dir name stored in name
+	name := filepath.Base(dir)
+	if contains(filesToIgnore, name) || contains(filesToIgnore, dir) {
+		fmt.Println("Ignoring file: ", name)
+		return "", fmt.Errorf("This file to be ignored")
+	}
+	
+	entries, _ := ioutil.ReadDir(dir) // the subdirectories and files in the directory
+	lines := []string{} // array to store the lines of the tree object to be made and saved
+	for _, entry := range entries { // grab each entry in the directory
+		fullPath := filepath.Join(dir, entry.Name()) // get the full path of the entry
+		baseName := entry.Name() // get the name of the entry
+		// fmt.Println("Base name: ", baseName)
+		// fmt.Println("Full path: ", fullPath)
+		// fmt.Println(contains(filesToIgnore, baseName))
+		// fmt.Println(contains(filesToIgnore, fullPath))
 
+		// for _, i := range filesToIgnore {
+		// 	fmt.Println(i)
+		// }
 
-	// files to ignore are stored in .solignore
-	// contents_solignore := readFile(".sol/.solignore")
-
-	entries, _ := ioutil.ReadDir(dir)
-	lines := []string{}
-	for _, entry := range entries {
-		fullPath := filepath.Join(dir, entry.Name())
-
-		if contains(filesToIgnore, entry.Name()){ //skip the sol directory
-			// fmt.Println("Skipping directory: ", fullPath)
+		if contains(filesToIgnore, baseName) || contains(filesToIgnore, fullPath){
+			fmt.Println("Ignoring", baseName)
+			// skip this file or directory
+			// return "", fmt.Errorf("This file to be ignored")
 			continue
-		}
-		
-		if entry.IsDir() { //this is a directory
-			// need to create a tree object
+		} 
 
-			// fmt.Println("Hashing child directory: ", fullPath) //debug line
-			objHash, _ := hashDir(fullPath) // get this tree obj created and saved + objHash returned
-			//add objhash to lines
-			//name of dir
-			nameDir := entry.Name()
-			lines = append(lines, "Tree " + objHash + " " + nameDir +"\x00")
+		if entry.IsDir() { // if the entry is a directory
+			objHash, err := hashDir(fullPath)
+			if err == nil {
+				nameDir := entry.Name()
+				lines = append(lines, "Tree " + objHash + " " + nameDir + "\x00")
+				// fmt.Println(entry.Name() + " hash: " + objHash)
+			} else {
+				fmt.Println("Ignoring tree: ", fullPath)
+			}
 		} else {
-			// If the entry is a file
-			// fmt.Println("Hashing child file: ", fullPath)
-			objHash, err := hashFile(fullPath) //get object
-			if err == nil{
+			// this is a file
+			objHash, err := hashFile(fullPath)
+			if err == nil {
 				fileName := entry.Name()
 				lines = append(lines, "Blob " + objHash + " " + fileName + "\x00")
+				// fmt.Println(entry.Name() + " hash: " + objHash)
+			} else {
+				fmt.Println("Ignoring file: ", fullPath)
 			}
 		}
 	}
 	toAdd := ""
-	// go through each item in lines
+
 	for _, item := range lines {
 		toAdd += item
 	}
-	// fmt.Println("To add is: %s", toAdd)
-		
+
 	size := fmt.Sprintf("%d", len(toAdd))
-	// fmt.Println("Size is: ", size)
-	// fmt.Println("To add is: ", toAdd)
 	contents := "Tree " + size + "\x00" + toAdd
-	// fmt.Println("For directory: ", dir, " contents is: ", contents)
-
-	// fmt.Println("Contents is: ", contents)
-	
 	contents = compress(contents)
 	hash := hashContents(contents)
-	
-	// fmt.Println("Hash is: %s", hash)
-
-	createDir(objectsPath + hash[:2])
-	writeFile(objectsPath + hash[:2] + "/" + hash[2:], contents)
-	fmt.Println(dir, " hash: ", hash)
-
-	return hash, nil
-}
-
-func hashFile(dir string) (string, error) {
-	fileName := filepath.Base(dir)
-
-	if contains(filesToIgnore, fileName) {
-		fmt.Println("Ignoring file: ", fileName)
-		// return empty string and error code 1
-		return "", fmt.Errorf("%d", 1)
-	}
-	contents := readFile(dir)
-	size := len(contents)
-
-	contents = "Blob " + string(size) + "\x00" + contents
-	contents = compress(contents)
-
-	hash := hashContents(contents)
-
 
 	if dirExists(objectsPath + hash[:2]) {
 		writeFile(objectsPath + hash[:2] + "/" + hash[2:], contents)
@@ -106,6 +81,32 @@ func hashFile(dir string) (string, error) {
 
 	fmt.Println(dir, " hash: ", hash)
 	return hash, nil
+}
+
+func hashFile(dir string) (string, error) {
+	fileName := filepath.Base(dir)
+	if contains(filesToIgnore, fileName) || contains(filesToIgnore, dir) {
+		fmt.Println("Ignoring file: ", fileName)
+		return "", fmt.Errorf("This file to be ignored")
+	}
+	contents := readFile(dir)
+	size := len(contents)
+
+	contents = "Blob " + string(size) + "\x00" + contents
+	contents = compress(contents)
+
+	hash := hashContents(contents)
+
+	if dirExists(objectsPath + hash[:2]) {
+		writeFile(objectsPath + hash[:2] + "/" + hash[2:], contents)
+	} else {
+		createDir(objectsPath + hash[:2])
+		writeFile(objectsPath + hash[:2] + "/" + hash[2:], contents)
+	}
+
+	fmt.Println(dir, " hash: ", hash)
+	return hash, nil
+
 }
 
 // addCmd represents the add command
@@ -119,7 +120,6 @@ var addCmd = &cobra.Command{
 		if fileExists(solignorePath) {
 			contents := readFile(solignorePath)
 			filesToIgnore = append(filesToIgnore, strings.Split(contents, "\n")...)
-			fmt.Println("Files to ignore: ", filesToIgnore)
 		}
 
 		if force {
@@ -130,7 +130,7 @@ var addCmd = &cobra.Command{
 		if len(args) == 0 {
 			// fmt.Println("Hashing root directory")
 			hash, _ := hashDir(currentDir)
-			writeFile(".sol/stagedChanges", "Tree " + hash +  " " + currentDir + "\n")
+			writeFile(stagePath, "Tree " + hash +  " " + currentDir + "\n")
 			return nil
 		} else {
 			// stagingContents := ""
@@ -138,10 +138,10 @@ var addCmd = &cobra.Command{
 			for _, arg := range args { //grab each arg
 				if fileExists(arg) {
 					hash, _ := hashFile(arg)
-					writeToFile(".sol/stagedChanges", "Blob " + hash + " " + arg)
+					writeToFile(stagePath, "Blob " + hash + " " + arg)
 				} else if dirExists(arg) {
 					hash, _ := hashDir(arg)
-					writeToFile(".sol/stagedChanges", "Tree " + hash + " " + arg)
+					writeToFile(stagePath, "Tree " + hash + " " + arg)
 				} else {
 					fmt.Println("File or directory: ", arg, " does not exist")
 				}
@@ -153,5 +153,5 @@ var addCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(addCmd)
-	rootCmd.Flags().BoolVarP(&force, "force", "f", false, "force add otherwise ignored files")
+	addCmd.Flags().BoolVarP(&force, "force", "f", false, "force add otherwise ignored files")
 }

@@ -12,10 +12,12 @@ import (
 	// "github.com/spf13/cobra"
 )
 
-
-const solignorePath = ".solignore"
-const solPath = ".sol"
-const objectsPath = ".sol/objects"
+const (
+	solignorePath = ".solignore"
+	solPath = ".sol"
+	objectsPath = ".sol/objects/"
+	stagePath = ".sol/stagedChanges"
+)
 
 // file functions
 
@@ -162,8 +164,8 @@ func notInitialisedRepo(dir string) bool {
 	return true
 }
 
-func contains(slice []string, element string) bool {
-	for _, i := range slice {
+func contains(list []string, element string) bool {
+	for _, i := range list {
 		if i == element {
 			return true
 		}

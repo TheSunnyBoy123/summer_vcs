@@ -42,7 +42,7 @@ var diffCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		obj1 := args[0]
 		obj2 := args[1]
-		if fileExists(".sol/objects/" + obj1[:2] + "/" + obj1[2:]) && fileExists(".sol/objects/" + obj2[:2] + "/" + obj2[2:]) {
+		if fileExists(objectsPath + obj1[:2] + "/" + obj1[2:]) && fileExists(".sol/objects/" + obj2[:2] + "/" + obj2[2:]) {
 			diff(obj1, obj2)
 		} else {
 			fmt.Println("Object does not exist")
