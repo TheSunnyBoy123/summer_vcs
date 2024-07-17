@@ -1,8 +1,9 @@
 package cmd
 
 import (
-	"fmt"
 	"bytes"
+	"fmt"
+
 	"github.com/spf13/cobra"
 )
 
@@ -25,16 +26,20 @@ to quickly create a Cobra application.`,
 			return
 		}
 		// fmt.Println("catFile called with hash: ", args[0])
-        hash := args[0]
+		hash := args[0]
 		// TODO: add ability to access file just from 5 characters of hash
 		filePath := ".sol/objects/" + hash[:2] + "/" + hash[2:]
 		if fileExists(filePath) {
 			contents := decompress(readFile(filePath))
+			fmt.Println("contents: ", string(contents))
 			elements := bytes.Split([]byte(contents), []byte("\x00"))
+			firstLine := elements[0]
+			// fmt.Println("firstLine: ", string(firstLine))
+			words := bytes.Split(firstLine, []byte(" "))
+			// fmt.Println("words: ", words)
+			typeObject, size := string(words[0]), string(words[1])
 			if t { // type case
-				firstLine := elements[0]
-				words := bytes.Split(firstLine, []byte(" "))
-				fmt.Println(string(words[0]))
+				fmt.Println(typeObject)
 			}
 			if p { // pretty print case
 				for _, element := range elements[1:] {
@@ -42,15 +47,13 @@ to quickly create a Cobra application.`,
 				}
 			}
 			if s { // size case
-				firstLine := elements[0]
-				words := bytes.Split(firstLine, []byte(" "))
-				fmt.Println(string(words[1]))
+				fmt.Println("size: ", size)
 			}
-			
+
 		} else {
 			fmt.Println("File does not exist")
 		}
-            
+
 	},
 }
 

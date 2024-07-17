@@ -1,15 +1,14 @@
 /*
 Copyright © 2024 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
 import (
 	"fmt"
 	"os"
+
 	"github.com/spf13/cobra"
 )
-
 
 const (
 	solMainDir      = ".sol"
@@ -17,15 +16,15 @@ const (
 	solBranches     = ".sol/branches"
 	solObjects      = ".sol/objects"
 	solRefs         = ".sol/refs"
+	solHead         = ".sol/HEAD"
 	excessArgsError = "Too many arguments\n"
 )
-
 
 // initCmd represents the init command
 var initCmd = &cobra.Command{
 	Use:   "init [<directory>]",
 	Short: "Initialises sol within the provided directory",
-	Long: `Creates .sol directory as well as the metadata files required for sol to function.`,
+	Long:  `Creates .sol directory as well as the metadata files required for sol to function.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		switch len(args) {
 		case 0:
@@ -33,19 +32,11 @@ var initCmd = &cobra.Command{
 			wd, _ := os.Getwd()
 			if notInitialisedRepo(wd) {
 				initializeDirs([]string{solMainDir, solCommits, solBranches, solObjects})
-				createFiles([]string{stagePath})
+				createFiles([]string{stagePath, solHead})
 				fmt.Println("Repository initialised")
 			} else {
 				fmt.Println("Repository already exists for this directory")
 			}
-		// case 1:
-		// 	if dirExists(args[0]) && notInitialisedRepo(args[0]) {
-		// 		initializeDirs([]string{args[0] + "/" + solMainDir, args[0] + "/" + solCommits, args[0] + "/" + solBranches, args[0] + "/" + solObjects})
-		// 		createFiles([]string{args[0] + "/.sol/stagedChanges.txt"})
-		// 		fmt.Println("Repository initialised")
-		// 	} else {
-		// 		fmt.Println("Directory does not exist")
-		// 	}
 		default:
 			fmt.Print(excessArgsError)
 		}

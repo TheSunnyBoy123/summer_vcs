@@ -1,22 +1,21 @@
 package cmd
 
 import (
-	"crypto/sha1"
-    "fmt"
-	"path/filepath"
-    "io/ioutil"
-    "log"
-    "os"
-	"compress/zlib"
 	"bytes"
+	"compress/zlib"
+	"crypto/sha1"
+	"fmt"
+	"io/ioutil"
+	"log"
+	"os"
 	// "github.com/spf13/cobra"
 )
 
 const (
 	solignorePath = ".solignore"
-	solPath = ".sol"
-	objectsPath = ".sol/objects/"
-	stagePath = ".sol/stagedChanges"
+	solPath       = ".sol"
+	objectsPath   = ".sol/objects/"
+	stagePath     = ".sol/stagedChanges"
 )
 
 // file functions
@@ -57,7 +56,7 @@ func writeFile(dir string, contents string) {
 	}
 }
 
-func readFile(dir string) string{
+func readFile(dir string) string {
 	file, err := os.Open(dir)
 	if err != nil {
 		log.Fatalf("Failed opening file: %s", err)
@@ -81,7 +80,6 @@ func writeToFile(dir string, contents string) {
 		log.Fatalf("Failed writing to file: %s", err)
 	}
 }
-
 
 // dir functions
 
@@ -116,8 +114,7 @@ func deleteDir(dir string) error {
 	return nil
 }
 
-
-// sha functions 
+// sha functions
 func hashContents(contents string) string {
 	// hash contents using sha1 library
 	hash := sha1.New()
@@ -145,23 +142,11 @@ func decompress(contents string) string {
 	return decompressedContent.String()
 }
 
-
-
 // misc functions
 
 func notInitialisedRepo(dir string) bool {
-	for {
-		dir = filepath.Dir(dir)
-		if _, err := os.Stat(filepath.Join(dir, ".sol")); err == nil {
-			// .sol directory exists in this directory
-			return false
-		}
-		if dir == "/" || dir == "." {
-			//reached root directory
-			break
-		}
-	}
-	return true
+	// check if current directory has .sol directory
+	return !dirExists(dir + "/" + solPath)
 }
 
 func contains(list []string, element string) bool {
