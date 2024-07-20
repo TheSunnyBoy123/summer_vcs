@@ -16,6 +16,8 @@ const (
 	solPath       = ".sol"
 	objectsPath   = ".sol/objects/"
 	stagePath     = ".sol/stagedChanges"
+	refsPath      = ".sol/refs/"
+	indexPath     = ".sol/index"
 )
 
 // file functions
@@ -156,4 +158,15 @@ func contains(list []string, element string) bool {
 		}
 	}
 	return false
+}
+
+func contentsObject(hash string) string {
+	contents := decompress(readFile(objectsPath + hash[:2] + "/" + hash[2:]))
+	lines := bytes.Split([]byte(contents), []byte("\x00"))
+	return string(lines[0])
+}
+
+func getFullPath(dir string) string {
+	wd, _ := os.Getwd()
+	return wd + "/"
 }

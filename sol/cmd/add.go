@@ -1,3 +1,5 @@
+//go:build exclude
+
 package cmd
 
 import (
@@ -82,15 +84,19 @@ func hashDir(dir string) (string, error) {
 }
 
 func hashFile(dir string) (string, error) {
+
 	fileName := filepath.Base(dir)
 	if contains(filesToIgnore, fileName) || contains(filesToIgnore, dir) {
 		fmt.Println("Ignoring file: ", fileName)
 		return "", fmt.Errorf("this file to be ignored")
 	}
 
+	// if this file has been hashed before, get the contents from original file, make a diff and hash the diff in place of contents
+	// if the file has not been hashed before, hash the file and save the contents in the objects directory
+
 	contents := readFile(dir)
 	size := len(contents)
-	fmt.Println("size when hashing file: ", size)
+	// fmt.Println("size when hashing file: ", size)
 	sizeText := fmt.Sprintf("%d", size)
 	contents = "Blob " + sizeText + "\x00" + contents
 	contents = compress(contents)
@@ -117,13 +123,30 @@ var addCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		currentDir := "."
 
+		// add the files to staging area, with the hash of the file
+		// if the file is a directory, hash the directory and add the hash to the staging area
+		// check refs if the file object has been created already. if it has, make a diff of the contents and hash the diff
+
+		// refs := readFile(refsPath)
+		// if refs != "" {
+		// 	// split refs
+		// 	refsList := strings.Split(refs, "\n")
+		// 	refMap := make(map[string]string)
+		// 	for _, ref := range refsList {
+		// 		// ref contains "<name> <hash>"
+		// 		// create a map
+		// 		words := strings.Split(ref, " ")
+		// 		refMap[words[0]] = words[1]
+		// 	}
+		// }
+
 		if fileExists(solignorePath) {
 			contents := readFile(solignorePath)
 			filesToIgnore = append(filesToIgnore, strings.Split(contents, "\n")...)
 		}
 
 		if force {
-			filesToIgnore = []string{".sol"}
+			filesToIgnore = []string{solPath}
 		}
 		fmt.Println("Files to ignore: ", filesToIgnore)
 

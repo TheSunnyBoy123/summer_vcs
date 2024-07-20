@@ -1,16 +1,16 @@
+//go:build exclude
+
 /*
 Copyright © 2024 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
-
-
 
 var ignoreCmd = &cobra.Command{
 	Use:   "ignore",
@@ -23,16 +23,15 @@ var ignoreCmd = &cobra.Command{
 			createFiles([]string{solignorePath})
 		}
 		for _, arg := range args {
-			if fileExists(arg){
+			if fileExists(arg) {
 				writeToFile(solignorePath, arg)
 			}
 		}
 	},
 }
 
-
 var addIgnoreCmd = &cobra.Command{
-	Use:  "add",
+	Use:   "add",
 	Short: "Add files and directories to the .solignore file",
 	Long: `Add files and directories to the .solignore file, to be ignored by the add command.
 	All passed arguments along with this will be added to the .solignore at one go.`,
@@ -47,9 +46,9 @@ var addIgnoreCmd = &cobra.Command{
 }
 
 var clearIgnoreCmd = &cobra.Command{
-	Use:  "clear",
+	Use:   "clear",
 	Short: "Clear the .solignore file",
-	Long: `Clear the .solignore file, removing all the files and directories to be ignored.`,
+	Long:  `Clear the .solignore file, removing all the files and directories to be ignored.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if fileExists(solignorePath) {
 			writeFile(solignorePath, "")
@@ -59,17 +58,23 @@ var clearIgnoreCmd = &cobra.Command{
 }
 
 var rmCmd = &cobra.Command{
-	Use:  "rm",
-	Short: "Remove the .solignore file",
-	Long: `Remove the .solignore file.`,
+	Use:   "rm",
+	Short: "Remove the files from .solignore file",
+	Long:  `Removes files from the .solignore file, to be no longer ignored by the add command.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if fileExists(solignorePath) {
-			err := deleteFile(solignorePath)
-			if err != nil {
-				fmt.Println("Failed to remove .solignore file")
-			} else {
-				fmt.Println(".solignore file removed")
+			contents := readFile(solignorePath)
+			// convert to list, split by newline character
+			filesToIgnore = append(filesToIgnore, strings.Split(contents, "\n")...)
+			newFilesToIgnore := []string{}
+			for _, arg := range args {
+				if !contains(filesToIgnore, arg) {
+					// add to new list if not to be removed
+					_ = append(newFilesToIgnore, arg)
+				}
 			}
+		} else {
+			fmt.Println(".solignore file does not exist")
 		}
 	},
 }

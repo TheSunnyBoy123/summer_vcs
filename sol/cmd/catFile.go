@@ -31,19 +31,18 @@ to quickly create a Cobra application.`,
 		filePath := ".sol/objects/" + hash[:2] + "/" + hash[2:]
 		if fileExists(filePath) {
 			contents := decompress(readFile(filePath))
-			fmt.Println("contents: ", string(contents))
-			elements := bytes.Split([]byte(contents), []byte("\x00"))
-			firstLine := elements[0]
+			// fmt.Println("contents: ", string(contents))
+			lines := bytes.Split([]byte(contents), []byte("\x00"))
+			firstLine := lines[0]
 			// fmt.Println("firstLine: ", string(firstLine))
 			words := bytes.Split(firstLine, []byte(" "))
-			// fmt.Println("words: ", words)
 			typeObject, size := string(words[0]), string(words[1])
 			if t { // type case
 				fmt.Println(typeObject)
 			}
 			if p { // pretty print case
-				for _, element := range elements[1:] {
-					fmt.Println(string(element))
+				for _, line := range lines[1:] {
+					fmt.Println(string(line))
 				}
 			}
 			if s { // size case
