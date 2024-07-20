@@ -41,6 +41,10 @@ func (ws *Workspace) ListFiles() ([]string, error) {
 	return result, nil
 }
 
+func (ws *Workspace) ReadFile(path string) ([]byte, error) {
+	return ioutil.ReadFile(path)
+}
+
 // commitCmd represents the commit command
 var commitCmd = &cobra.Command{
 	Use:   "commit",
@@ -57,17 +61,23 @@ to quickly create a Cobra application.`,
 
 		workspace := NewWorkspace(root_path)
 		database := NewDatabase(db_path)
-		// listFiles, _ := workspace.ListFiles()
+		listFiles, _ := workspace.ListFiles()
 
 		// for _, file := range listFiles {
 		// 	fmt.Println(file)
 		// }
+		for _, file := range listFiles {
+			data := readFile(file)
+			blob := NewBlob(data)
 
-		return nil
+			database.Store(blob)
 
+			return nil
+		}
 	},
 }
 
+func init() {}
 func init() {
 	rootCmd.AddCommand(commitCmd)
 }
