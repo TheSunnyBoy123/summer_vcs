@@ -1,20 +1,17 @@
 package cmd
 
 import (
-	"bytes"
-	"encoding/hex"
-	"sort"
+	"fmt"
+	"strings"
 )
 
 type Tree struct {
-	OID     string
 	Entries []*Entry
+	OID     string
 }
 
 func NewTree(entries []*Entry) *Tree {
-	return &Tree{
-		Entries: entries,
-	}
+	return &Tree{Entries: entries}
 }
 
 func (t *Tree) Type() string {
@@ -22,26 +19,17 @@ func (t *Tree) Type() string {
 }
 
 func (t *Tree) ToString() string {
-	const mode = "100644"
-	var buffer bytes.Buffer
-
-	// Sort entries by name
-	sort.Slice(t.Entries, func(i, j int) bool {
-		return t.Entries[i].Name < t.Entries[j].Name
-	})
-
-	// Serialize entries
+	var sb strings.Builder
 	for _, entry := range t.Entries {
-		oidBytes, err := hex.DecodeString(entry.OID)
-		if err != nil {
-			continue // Handle error appropriately in real code
-		}
-		if len(oidBytes) != 20 {
-			continue // Ensure OID is 20 bytes long
-		}
-		buffer.WriteString(mode + " " + entry.Name + "\x00")
-		buffer.Write(oidBytes)
+		sb.WriteString(fmt.Sprintf("%s %s\n", entry.OID, entry.Name))
 	}
+	return sb.String()
+}
 
-	return buffer.String()
+func (t *Tree) GetOID() string {
+	return t.OID
+}
+
+func (t *Tree) SetOID(oid string) {
+	t.OID = oid
 }

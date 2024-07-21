@@ -1,14 +1,12 @@
 package cmd
 
 type Blob struct {
-	OID  string
 	Data string
+	OID  string
 }
 
 func NewBlob(data string) *Blob {
-	return &Blob{
-		Data: data,
-	}
+	return &Blob{Data: data}
 }
 
 func (b *Blob) Type() string {
@@ -17,4 +15,12 @@ func (b *Blob) Type() string {
 
 func (b *Blob) ToString() string {
 	return b.Data
+}
+
+func (b *Blob) GetOID() string {
+	return b.OID
+}
+
+func (b *Blob) SetOID(oid string) {
+	b.OID = oid
 }

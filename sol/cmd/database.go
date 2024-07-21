@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"crypto/sha1"
 	"fmt"
 	"path/filepath"
 )
@@ -25,23 +24,15 @@ func NewDatabase(pathname string) *Database {
 
 func (db *Database) Store(object SolObject) error {
 	content := fmt.Sprintf("%s %d\x00%s", object.Type(), len(object.ToString()), object.ToString())
-	hash := sha1.New()
-	hash.Write([]byte(content))
-	object.OID = fmt.Sprintf("%x", hash.Sum(nil))
+	oid := hashContents(content)
 
-	if err := db.writeObject(object.OID, content); err != nil {
-		return err
-	}
-
+	db.writeObject(oid, content)
 	return nil
 }
 
 func (db *Database) writeObject(oid, content string) error {
-	objectPath := filepath.Join(db.Pathname, oid[:2], oid[2:])
 	createDir(filepath.Join(db.Pathname, oid[:2]))
-
-	compressedContent := compress(content)
-
-	writeFile(objectPath, compressedContent)
+	objectPath := filepath.Join(db.Pathname, oid[:2], oid[2:])
+	writeFile(objectPath, content)
 	return nil
 }
