@@ -4,6 +4,7 @@ Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"fmt"
 	"io/ioutil"
 
 	"github.com/spf13/cobra"
@@ -58,22 +59,27 @@ to quickly create a Cobra application.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		root_path := "."
 		db_path := objectsPath
+		// sol_path := solPath
 
 		workspace := NewWorkspace(root_path)
 		database := NewDatabase(db_path)
 		listFiles, _ := workspace.ListFiles()
 
-		// for _, file := range listFiles {
-		// 	fmt.Println(file)
-		// }
+		var entries []*Entry
 		for _, file := range listFiles {
 			data := readFile(file)
 			blob := NewBlob(data)
-
 			database.Store(blob)
 
-			return nil
+			entry := NewEntry(file, blob.OID)
+			entries = append(entries, entry)
 		}
+
+		tree := NewTree(entries)
+		database.Store(tree)
+
+		fmt.Println("tree: ", tree.OID)
+		return nil
 	},
 }
 
