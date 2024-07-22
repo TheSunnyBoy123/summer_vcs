@@ -36,7 +36,7 @@ func (t *Tree) ToString() string {
 		listEntries += thisEntry
 	}
 
-	fmt.Println("List entries:", listEntries)
+	// fmt.Println("List entries:", listEntries)
 	return listEntries
 }
 
@@ -45,5 +45,6 @@ func (t *Tree) GetOID() string {
 }
 
 func (t *Tree) SetOID(oid string) {
-	t.OID = oid
+	content := fmt.Sprintf("%s %d\x00%s", t.Type(), len(t.ToString()), t.ToString())
+	t.OID = hashContents(content)
 }

@@ -63,11 +63,6 @@ to quickly create a Cobra application.`,
 		root_path := "."
 		db_path := objectsPath
 
-		author_name, author_email, err := getAuthorEnv()
-		if err != nil {
-			os.Exit(1)
-		}
-
 		// sol_path := solPath
 
 		workspace := NewWorkspace(root_path)
@@ -85,17 +80,29 @@ to quickly create a Cobra application.`,
 		}
 
 		tree := NewTree(entries)
+		tree.SetOID("")
 		database.Store(tree)
 
 		time_now := time.Now()
 		time_now_string := time_now.Format(time.RFC3339)
-
+		author_name, author_email, err := getAuthorEnv()
+		if err != nil {
+			os.Exit(1)
+		}
 		author := NewAuthor(author_name, author_email, time_now_string)
-		fmt.Println("Author: ", author.ToString())
-
+		// fmt.Println("Author: ", author.ToString())
 		message, _ := cmd.Flags().GetString("message")
 		message = strings.Trim(message, " ")
-		fmt.Println("Message: ", message)
+		// fmt.Println("Message: ", message)
+		commit := NewCommit(tree, author, message)
+		commit.SetOID("")
+		database.Store(commit)
+
+		fmt.Println("Commit: ", commit.GetOID())
+		writeFile(headPath, commit.GetOID())
+
+		fmt.Println("[(commit)] " + commit.GetOID() + " " + message)
+		fmt.Println("[(commit)] " + commit.GetOID() + "\n" + message)
 
 		// fmt.Println("Tree: ", tree.GetOID())
 		return nil

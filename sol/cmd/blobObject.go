@@ -1,5 +1,9 @@
 package cmd
 
+import (
+	"fmt"
+)
+
 type Blob struct {
 	Data string
 	OID  string
@@ -22,5 +26,7 @@ func (b *Blob) GetOID() string {
 }
 
 func (b *Blob) SetOID(oid string) {
-	b.OID = oid
+	content := fmt.Sprintf("%s %d\x00%s", b.Type(), len(b.ToString()), b.ToString())
+
+	b.OID = hashContents(content)
 }

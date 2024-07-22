@@ -19,6 +19,7 @@ const (
 	stagePath     = ".sol/stagedChanges"
 	refsPath      = ".sol/refs/"
 	indexPath     = ".sol/index"
+	headPath      = ".sol/HEAD"
 )
 
 // file functions
@@ -180,12 +181,8 @@ func getAuthorEnv() (string, string, error) {
 	author_email := ""
 
 	// Get the home directory
-	homeDir, err := os.UserHomeDir()
-	if err != nil {
-		return "", "", fmt.Errorf("Failed to get home directory: %v", err)
-	}
+	homeDir, _ := os.UserHomeDir()
 
-	// Construct the full path to the .solconfig file
 	configPath := homeDir + "/.solconfig"
 	contents := readFile(configPath)
 	lines := strings.Split(contents, "\n")
