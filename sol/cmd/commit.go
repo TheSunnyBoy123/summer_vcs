@@ -6,6 +6,9 @@ package cmd
 import (
 	"fmt"
 	"io/ioutil"
+	"os"
+	"strings"
+	"time"
 
 	"github.com/spf13/cobra"
 )
@@ -59,6 +62,12 @@ to quickly create a Cobra application.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		root_path := "."
 		db_path := objectsPath
+
+		author_name, author_email, err := getAuthorEnv()
+		if err != nil {
+			os.Exit(1)
+		}
+
 		// sol_path := solPath
 
 		workspace := NewWorkspace(root_path)
@@ -78,12 +87,22 @@ to quickly create a Cobra application.`,
 		tree := NewTree(entries)
 		database.Store(tree)
 
-		fmt.Println("tree: ", tree.OID)
+		time_now := time.Now()
+		time_now_string := time_now.Format(time.RFC3339)
+
+		author := NewAuthor(author_name, author_email, time_now_string)
+		fmt.Println("Author: ", author.ToString())
+
+		message, _ := cmd.Flags().GetString("message")
+		message = strings.Trim(message, " ")
+		fmt.Println("Message: ", message)
+
+		// fmt.Println("Tree: ", tree.GetOID())
 		return nil
 	},
 }
 
-func init() {}
 func init() {
+	commitCmd.Flags().StringP("message", "m", "", "Commit message")
 	rootCmd.AddCommand(commitCmd)
 }

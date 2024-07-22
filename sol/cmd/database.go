@@ -30,7 +30,7 @@ func (db *Database) Store(object SolObject) error {
 	content = compress(content)
 
 	db.writeObject(oid, content)
-	fmt.Println("Writing data:", content)
+	// fmt.Println("Writing data:", content)
 	return nil
 }
 

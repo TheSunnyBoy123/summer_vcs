@@ -2,7 +2,12 @@ package cmd
 
 import (
 	"fmt"
-	"strings"
+	"sort"
+)
+
+const (
+	MODE         = "100644"    // Example mode, adjust as needed
+	ENTRY_FORMAT = "%s %s\x00" // Format for packing entries
 )
 
 type Tree struct {
@@ -19,11 +24,20 @@ func (t *Tree) Type() string {
 }
 
 func (t *Tree) ToString() string {
-	var sb strings.Builder
+	// Sort entries by name
+	sort.Slice(t.Entries, func(i, j int) bool {
+		return t.Entries[i].Name < t.Entries[j].Name
+	})
+
+	listEntries := ""
 	for _, entry := range t.Entries {
-		sb.WriteString(fmt.Sprintf("%s %s\n", entry.OID, entry.Name))
+		thisEntry := fmt.Sprintf(ENTRY_FORMAT, MODE, entry.Name)
+		thisEntry += entry.OID
+		listEntries += thisEntry
 	}
-	return sb.String()
+
+	fmt.Println("List entries:", listEntries)
+	return listEntries
 }
 
 func (t *Tree) GetOID() string {

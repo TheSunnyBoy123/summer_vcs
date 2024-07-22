@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"strings"
 	// "github.com/spf13/cobra"
 )
 
@@ -61,12 +62,14 @@ func writeFile(dir string, contents string) {
 func readFile(dir string) string {
 	file, err := os.Open(dir)
 	if err != nil {
-		log.Fatalf("Failed opening file: %s", err)
+		fmt.Printf("Failed opening file: %s\n", err)
+		os.Exit(1)
 	}
 	defer file.Close()
 	contents, err := ioutil.ReadAll(file)
 	if err != nil {
-		log.Fatalf("Failed reading file: %s", err)
+		fmt.Printf("Failed reading file: %s\n", err)
+		os.Exit(1)
 	}
 	return string(contents)
 }
@@ -74,12 +77,14 @@ func readFile(dir string) string {
 func writeToFile(dir string, contents string) {
 	file, err := os.OpenFile(dir, os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
-		log.Fatalf("Failed opening file: %s", err)
+		fmt.Printf("Failed opening file: %s", err)
+		os.Exit(1)
 	}
 	defer file.Close()
 	_, err = file.WriteString(contents + "\n")
 	if err != nil {
-		log.Fatalf("Failed writing to file: %s", err)
+		fmt.Printf("Failed writing to file: %s", err)
+		os.Exit(1)
 	}
 }
 
@@ -169,4 +174,35 @@ func contentsObject(hash string) string {
 func getFullPath(dir string) string {
 	wd, _ := os.Getwd()
 	return wd + "/"
+}
+func getAuthorEnv() (string, string, error) {
+	author_name := ""
+	author_email := ""
+
+	// Get the home directory
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		return "", "", fmt.Errorf("Failed to get home directory: %v", err)
+	}
+
+	// Construct the full path to the .solconfig file
+	configPath := homeDir + "/.solconfig"
+	contents := readFile(configPath)
+	lines := strings.Split(contents, "\n")
+	for _, line := range lines {
+		if strings.Contains(line, "SOL_AUTHOR_NAME") {
+			author_name = strings.Split(line, "=")[1]
+			author_name = strings.Trim(author_name, " ")
+		}
+		if strings.Contains(line, "SOL_AUTHOR_EMAIL") {
+			author_email = strings.Split(line, "=")[1]
+			author_email = strings.Trim(author_email, " ")
+		}
+	}
+
+	if author_name == "" || author_email == "" {
+		return "", "", fmt.Errorf("Author name or email not found")
+	} else {
+		return author_name, author_email, nil
+	}
 }
