@@ -15,7 +15,7 @@ func NewTree(entries []*Entry) *Tree {
 }
 
 func (t *Tree) Type() string {
-	return "tree"
+	return "Tree"
 }
 
 func (t *Tree) ToString() string {

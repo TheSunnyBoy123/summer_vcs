@@ -10,7 +10,7 @@ func NewBlob(data string) *Blob {
 }
 
 func (b *Blob) Type() string {
-	return "blob"
+	return "Blob"
 }
 
 func (b *Blob) ToString() string {

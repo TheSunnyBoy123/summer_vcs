@@ -24,9 +24,13 @@ func NewDatabase(pathname string) *Database {
 
 func (db *Database) Store(object SolObject) error {
 	content := fmt.Sprintf("%s %d\x00%s", object.Type(), len(object.ToString()), object.ToString())
+
 	oid := hashContents(content)
 
+	content = compress(content)
+
 	db.writeObject(oid, content)
+	fmt.Println("Writing data:", content)
 	return nil
 }
 
