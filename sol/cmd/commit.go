@@ -67,7 +67,7 @@ to quickly create a Cobra application.`,
 
 		workspace := NewWorkspace(root_path)
 		database := NewDatabase(db_path)
-		refs := NewRefs(refsPath)
+		refs := NewRefs(solPath)
 
 		listFiles, _ := workspace.ListFiles()
 
@@ -85,7 +85,11 @@ to quickly create a Cobra application.`,
 		tree.SetOID("")
 		database.Store(tree)
 
+		//parent
+		fmt.Println("ref pathname: ", refs.pathname)
 		parent := refs.ReadHead()
+		fmt.Println("Parent: ", parent)
+
 		author_name, author_email, err := getAuthorEnv()
 		if err != nil {
 			os.Exit(1)

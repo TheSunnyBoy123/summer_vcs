@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"path/filepath"
 )
 
@@ -31,6 +32,7 @@ func (r *Refs) headPath() string {
 }
 
 func (r *Refs) ReadHead() string {
+	fmt.Println("Reading HEAD: ", r.headPath())
 	if fileExists(r.headPath()) {
 		return readFile(r.headPath())
 	}
