@@ -31,7 +31,7 @@ func (t *Tree) ToString() string {
 
 	listEntries := ""
 	for _, entry := range t.Entries {
-		thisEntry := fmt.Sprintf(ENTRY_FORMAT, MODE, entry.Name)
+		thisEntry := fmt.Sprintf(ENTRY_FORMAT, entry.Mode(), entry.Name)
 		thisEntry += entry.OID
 		listEntries += thisEntry
 	}

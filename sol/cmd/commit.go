@@ -5,49 +5,13 @@ package cmd
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
+	"path"
 	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
 )
-
-type Workspace struct {
-	Pathname string
-}
-
-func NewWorkspace(pathname string) *Workspace {
-	return &Workspace{
-		Pathname: pathname,
-	}
-}
-
-func (ws *Workspace) ListFiles() ([]string, error) {
-	ignore := map[string]bool{
-		".":    true,
-		"..":   true,
-		".sol": true,
-	}
-
-	files, err := ioutil.ReadDir(ws.Pathname)
-	if err != nil {
-		return nil, err
-	}
-
-	var result []string
-	for _, file := range files {
-		if !ignore[file.Name()] {
-			result = append(result, file.Name())
-		}
-	}
-
-	return result, nil
-}
-
-func (ws *Workspace) ReadFile(path string) ([]byte, error) {
-	return ioutil.ReadFile(path)
-}
 
 // commitCmd represents the commit command
 var commitCmd = &cobra.Command{
@@ -73,11 +37,15 @@ to quickly create a Cobra application.`,
 
 		var entries []*Entry
 		for _, file := range listFiles {
+			path := path.Join(root_path, file)
+
 			data := readFile(file)
 			blob := NewBlob(data)
+
 			database.Store(blob)
 
-			entry := NewEntry(file, blob.OID)
+			stat := workspace.StatFile(path)
+			entry := NewEntry(file, blob.OID, stat)
 			entries = append(entries, entry)
 		}
 
@@ -86,9 +54,9 @@ to quickly create a Cobra application.`,
 		database.Store(tree)
 
 		//parent
-		fmt.Println("ref pathname: ", refs.pathname)
+		// fmt.Println("ref pathname: ", refs.pathname)
 		parent := refs.ReadHead()
-		fmt.Println("Parent: ", parent)
+		// fmt.Println("Parent: ", parent)
 
 		author_name, author_email, err := getAuthorEnv()
 		if err != nil {
@@ -110,7 +78,9 @@ to quickly create a Cobra application.`,
 		writeFile(headPath, commit.GetOID())
 
 		// fmt.Println("[(commit)] " + commit.GetOID() + " " + message)
-		fmt.Println("[(commit)] " + commit.GetOID() + "\n" + message)
+		if parent == "" {
+			fmt.Println("[(commit)] " + commit.GetOID() + "\n" + message)
+		}
 
 		// fmt.Println("Tree: ", tree.GetOID())
 		return nil

@@ -35,8 +35,12 @@ func (db *Database) Store(object SolObject) error {
 }
 
 func (db *Database) writeObject(oid, content string) error {
-	createDir(filepath.Join(db.Pathname, oid[:2]))
 	objectPath := filepath.Join(db.Pathname, oid[:2], oid[2:])
+	if fileExists(objectPath) {
+		fmt.Println("Object already exists")
+		return nil
+	}
+	createDir(filepath.Join(db.Pathname, oid[:2]))
 	writeFile(objectPath, content)
 	return nil
 }
