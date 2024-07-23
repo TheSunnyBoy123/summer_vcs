@@ -203,3 +203,11 @@ func getAuthorEnv() (string, string, error) {
 		return author_name, author_email, nil
 	}
 }
+
+func flatMap(input []string, f func(string) []string) []string {
+	var result []string
+	for _, elem := range input {
+		result = append(result, f(elem)...)
+	}
+	return result
+}
