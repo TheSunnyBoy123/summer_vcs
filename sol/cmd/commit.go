@@ -33,7 +33,7 @@ to quickly create a Cobra application.`,
 		database := NewDatabase(db_path)
 		refs := NewRefs(solPath)
 
-		listFiles, _ := workspace.ListFiles()
+		listFiles, _ := workspace.ListFiles("")
 
 		var entries []*Entry
 		for _, file := range listFiles {
@@ -45,12 +45,12 @@ to quickly create a Cobra application.`,
 			database.Store(blob)
 
 			stat := workspace.StatFile(path)
+			fmt.Println("blob oid: ", blob.OID)
 			entry := NewEntry(file, blob.OID, stat)
 			entries = append(entries, entry)
 		}
 
 		tree := NewTree(entries)
-		tree.SetOID("")
 		database.Store(tree)
 
 		//parent

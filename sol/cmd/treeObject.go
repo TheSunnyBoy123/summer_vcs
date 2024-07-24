@@ -6,8 +6,8 @@ import (
 )
 
 const (
-	MODE         = "100644"    // Example mode, adjust as needed
-	ENTRY_FORMAT = "%s %s\x00" // Format for packing entries
+	MODE         = "100644"       // Example mode, adjust as needed
+	ENTRY_FORMAT = "%s %s %s\x00" // Format for packing entries
 )
 
 type Tree struct {
@@ -16,7 +16,9 @@ type Tree struct {
 }
 
 func NewTree(entries []*Entry) *Tree {
-	return &Tree{Entries: entries}
+	obj := &Tree{Entries: entries}
+	obj.SetOID()
+	return obj
 }
 
 func (t *Tree) Type() string {
@@ -31,8 +33,8 @@ func (t *Tree) ToString() string {
 
 	listEntries := ""
 	for _, entry := range t.Entries {
-		thisEntry := fmt.Sprintf(ENTRY_FORMAT, entry.Mode(), entry.Name)
-		thisEntry += entry.OID
+		thisEntry := fmt.Sprintf(ENTRY_FORMAT, entry.Mode(), entry.GetOID(), entry.Name)
+		fmt.Println("OID for " + entry.Name + " = " + entry.GetOID())
 		listEntries += thisEntry
 	}
 
@@ -44,7 +46,9 @@ func (t *Tree) GetOID() string {
 	return t.OID
 }
 
-func (t *Tree) SetOID(oid string) {
-	content := fmt.Sprintf("%s %d\x00%s", t.Type(), len(t.ToString()), t.ToString())
+func (t *Tree) SetOID() {
+	content := fmt.Sprintf("Tree %d\x00%s", len(t.ToString()), t.ToString())
 	t.OID = hashContents(content)
 }
+
+// add a method to return "tree" when called

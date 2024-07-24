@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -16,26 +17,59 @@ func NewWorkspace(pathname string) *Workspace {
 	}
 }
 
-func (ws *Workspace) ListFiles() ([]string, error) {
+func (ws *Workspace) getRelativePath(path string) (string, error) {
+	relPath, err := filepath.Rel(ws.Pathname, path)
+	if err != nil {
+		return "", err
+	}
+	return relPath, nil
+}
+
+func (ws *Workspace) ListFiles(dir string) ([]string, error) {
 	ignore := map[string]bool{
 		".":    true,
 		"..":   true,
 		".sol": true,
 	}
 
-	files, err := ioutil.ReadDir(ws.Pathname)
-	if err != nil {
-		return nil, err
+	if dir == "" {
+		dir = ws.Pathname
 	}
 
-	var result []string
-	for _, file := range files {
-		if !ignore[file.Name()] {
-			result = append(result, file.Name())
+	var listFilesRecursive func(string) ([]string, error)
+	listFilesRecursive = func(path string) ([]string, error) {
+		fmt.Println("Called for path: " + path)
+		files, err := ioutil.ReadDir(path)
+		if err != nil {
+			return nil, err
 		}
+
+		var paths []string
+		for _, file := range files {
+			if ignore[file.Name()] {
+				continue
+			}
+
+			fullPath := filepath.Join(path, file.Name())
+			if file.IsDir() {
+				subPaths, err := listFilesRecursive(fullPath)
+				if err != nil {
+					return nil, err
+				}
+				paths = append(paths, subPaths...)
+			} else {
+				relPath, err := ws.getRelativePath(fullPath)
+				if err != nil {
+					return nil, err
+				}
+				paths = append(paths, relPath)
+			}
+		}
+
+		return paths, nil
 	}
 
-	return result, nil
+	return listFilesRecursive(dir)
 }
 
 // return stat of file executable or not

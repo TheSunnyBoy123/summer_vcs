@@ -10,7 +10,9 @@ type Blob struct {
 }
 
 func NewBlob(data string) *Blob {
-	return &Blob{Data: data}
+	content := fmt.Sprintf("Blob %d\x00%s", len(data), data)
+	oid := hashContents(content)
+	return &Blob{Data: data, OID: oid}
 }
 
 func (b *Blob) Type() string {
@@ -25,8 +27,6 @@ func (b *Blob) GetOID() string {
 	return b.OID
 }
 
-func (b *Blob) SetOID(oid string) {
-	content := fmt.Sprintf("%s %d\x00%s", b.Type(), len(b.ToString()), b.ToString())
+// func (b *Blob) SetOID(oid string) {
 
-	b.OID = hashContents(content)
-}
+// }

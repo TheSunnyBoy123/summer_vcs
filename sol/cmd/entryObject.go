@@ -16,6 +16,10 @@ func NewEntry(name, oid string, stat os.FileInfo) *Entry {
 	}
 }
 
+func (e *Entry) GetOID() string {
+	return e.OID
+}
+
 func (e *Entry) Mode() string {
 	REGULAR_MODE := "100644"
 	EXECUTABLE_MODE := "100755"
