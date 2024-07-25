@@ -16,8 +16,8 @@ type Tree struct {
 }
 
 func NewTree(entries []*Entry) *Tree {
-	obj := &Tree{Entries: entries}
-	obj.SetOID()
+	obj := &Tree{Entries: entries, OID: ""}
+	obj.SetOID("")
 	return obj
 }
 
@@ -46,7 +46,7 @@ func (t *Tree) GetOID() string {
 	return t.OID
 }
 
-func (t *Tree) SetOID() {
+func (t *Tree) SetOID(oid string) {
 	content := fmt.Sprintf("Tree %d\x00%s", len(t.ToString()), t.ToString())
 	t.OID = hashContents(content)
 }

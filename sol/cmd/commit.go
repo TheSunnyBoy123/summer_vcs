@@ -6,7 +6,6 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"path"
 	"strings"
 	"time"
 
@@ -26,37 +25,36 @@ to quickly create a Cobra application.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		root_path := "."
 		db_path := objectsPath
+		path := " " //placeholder
 
 		// sol_path := solPath
-
+		// fmt.Println("reached line 31")
 		workspace := NewWorkspace(root_path)
 		database := NewDatabase(db_path)
 		refs := NewRefs(solPath)
+		// fmt.Println("reached line 35")
 
 		listFiles, _ := workspace.ListFiles("")
 
 		var entries []*Entry
 		for _, file := range listFiles {
-			path := path.Join(root_path, file)
-
 			data := readFile(file)
 			blob := NewBlob(data)
-
 			database.Store(blob)
 
 			stat := workspace.StatFile(path)
-			fmt.Println("blob oid: ", blob.OID)
 			entry := NewEntry(file, blob.OID, stat)
 			entries = append(entries, entry)
 		}
-
+		fmt.Println("reached line 50")
 		tree := NewTree(entries)
 		database.Store(tree)
 
 		//parent
-		// fmt.Println("ref pathname: ", refs.pathname)
+		fmt.Println("ref pathname: ", refs.pathname)
 		parent := refs.ReadHead()
-		// fmt.Println("Parent: ", parent)
+		fmt.Println("Parent: ", parent)
+		fmt.Println("reached line 57")
 
 		author_name, author_email, err := getAuthorEnv()
 		if err != nil {
@@ -78,9 +76,7 @@ to quickly create a Cobra application.`,
 		writeFile(headPath, commit.GetOID())
 
 		// fmt.Println("[(commit)] " + commit.GetOID() + " " + message)
-		if parent == "" {
-			fmt.Println("[(commit)] " + commit.GetOID() + "\n" + message)
-		}
+		fmt.Println("[(commit)] " + commit.GetOID() + "\n" + message)
 
 		// fmt.Println("Tree: ", tree.GetOID())
 		return nil

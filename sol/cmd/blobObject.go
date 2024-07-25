@@ -27,6 +27,6 @@ func (b *Blob) GetOID() string {
 	return b.OID
 }
 
-// func (b *Blob) SetOID(oid string) {
-
-// }
+func (b *Blob) SetOID(oid string) {
+	b.OID = oid
+}
