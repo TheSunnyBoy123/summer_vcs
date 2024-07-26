@@ -10,7 +10,7 @@ type Blob struct {
 }
 
 func NewBlob(data string) *Blob {
-	content := fmt.Sprintf("Blob %d\x00%s", len(data), data)
+	content := fmt.Sprintf("blob %d\x00%s", len(data), data)
 	oid := hashContents(content)
 	return &Blob{Data: data, OID: oid}
 }

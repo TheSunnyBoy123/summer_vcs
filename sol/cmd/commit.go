@@ -36,20 +36,32 @@ to quickly create a Cobra application.`,
 
 		listFiles, _ := workspace.ListFiles("")
 
+		// to store entries
 		var entries []*Entry
+
+		// fmt.Println("reached line")
+		// iterate over files in the root directory
 		for _, file := range listFiles {
+			// contents
 			data := readFile(file)
+			// create a blob object
 			blob := NewBlob(data)
+			// store this blob object
 			database.Store(blob)
 
+			// stat is whether file is executable or not
 			stat := workspace.StatFile(path)
+			// create entry object and add to list
 			entry := NewEntry(file, blob.OID, stat)
 			entries = append(entries, entry)
 		}
-		fmt.Println("reached line 50")
-		tree := NewTree(entries)
-		database.Store(tree)
 
+		// fmt.Println("reached line 50")
+		fmt.Println("reached line")
+		tree := NewTree(entries)
+		fmt.Println("line 59")
+		database.Store(tree)
+		fmt.Println("line 61")
 		//parent
 		fmt.Println("ref pathname: ", refs.pathname)
 		parent := refs.ReadHead()

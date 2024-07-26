@@ -89,6 +89,7 @@ func writeToFile(dir string, contents string) {
 	}
 }
 
+// **************************************************
 // dir functions
 
 func initializeDirs(dirs []string) {
@@ -122,6 +123,8 @@ func deleteDir(dir string) error {
 	return nil
 }
 
+// ****************************************************************************************************
+
 // sha functions
 func hashContents(contents string) string {
 	// hash contents using sha1 library
@@ -150,6 +153,7 @@ func decompress(contents string) string {
 	return decompressedContent.String()
 }
 
+// ******************************************************************************************************************************************************
 // misc functions
 
 func notInitialisedRepo(dir string) bool {

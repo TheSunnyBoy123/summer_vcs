@@ -1,6 +1,9 @@
 package cmd
 
-import "os"
+import (
+	"fmt"
+	"os"
+)
 
 type Entry struct {
 	Name string
@@ -16,15 +19,19 @@ func NewEntry(name, oid string, stat os.FileInfo) *Entry {
 	}
 }
 
+func (e *Entry) GetName() string {
+	return e.Name
+}
+
 func (e *Entry) GetOID() string {
 	return e.OID
 }
 
 func (e *Entry) Mode() string {
-	REGULAR_MODE := "100644"
-	EXECUTABLE_MODE := "100755"
-	if e.Stat.Mode()&0111 != 0 {
-		return EXECUTABLE_MODE
+	if e == nil {
+		fmt.Println("Entry is nil in Mode()")
+		return ""
 	}
-	return REGULAR_MODE
+	fmt.Println("Entry in Mode():", e)
+	return "100644"
 }
