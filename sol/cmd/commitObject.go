@@ -14,16 +14,32 @@ type Commit struct {
 }
 
 func NewCommit(parent string, tree *Tree, author *Author, message string) *Commit {
+	lines := []string{}
+
+	lines = append(lines, fmt.Sprintf("tree %s", tree.GetOID()))
+	if parent != "" {
+		lines = append(lines, fmt.Sprintf("parent %s", parent))
+	}
+	lines = append(lines, fmt.Sprintf("author %s", author.ToString()))
+	lines = append(lines, fmt.Sprintf("committer %s", author.ToString()))
+	lines = append(lines, "")
+	lines = append(lines, message)
+
+	contents := strings.Join(lines, "\n")
+
+	oid := hashContents(fmt.Sprintf("commit %d\x00%s", len(contents), contents))
+
 	return &Commit{
 		parent:  parent,
 		tree:    tree,
 		author:  author,
 		message: message,
+		OID:     oid,
 	}
 }
 
 func (c *Commit) Type() string {
-	return "Commit"
+	return "commit"
 }
 
 func (c *Commit) GetOID() string {

@@ -40,7 +40,9 @@ func (db *Database) writeObject(oid, content string) error {
 		fmt.Println("Object already exists")
 		return nil
 	}
-	createDir(filepath.Join(db.Pathname, oid[:2]))
+	if !dirExists(filepath.Join(db.Pathname, oid[:2])) {
+		createDir(filepath.Join(db.Pathname, oid[:2]))
+	}
 	writeFile(objectPath, content)
 	return nil
 }

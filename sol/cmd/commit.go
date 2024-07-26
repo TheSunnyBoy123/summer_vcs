@@ -57,16 +57,14 @@ to quickly create a Cobra application.`,
 		}
 
 		// fmt.Println("reached line 50")
-		fmt.Println("reached line")
+
 		tree := NewTree(entries)
-		fmt.Println("line 59")
 		database.Store(tree)
-		fmt.Println("line 61")
+
 		//parent
 		fmt.Println("ref pathname: ", refs.pathname)
 		parent := refs.ReadHead()
 		fmt.Println("Parent: ", parent)
-		fmt.Println("reached line 57")
 
 		author_name, author_email, err := getAuthorEnv()
 		if err != nil {
@@ -81,7 +79,6 @@ to quickly create a Cobra application.`,
 		// fmt.Println("Message: ", message)
 
 		commit := NewCommit(parent, tree, author, message)
-		commit.SetOID("")
 		database.Store(commit)
 
 		// fmt.Println("Commit: ", commit.GetOID())

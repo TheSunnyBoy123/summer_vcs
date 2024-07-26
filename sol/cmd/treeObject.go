@@ -24,16 +24,16 @@ func NewTree(entries []*Entry) *Tree {
 
 	for _, entry := range entries {
 		if entry == nil {
-			fmt.Println("Entry is nil")
+			// fmt.Println("Entry is nil")
 			continue
 		} else {
-			fmt.Println("Entry is not nil", entry)
+			// fmt.Println("Entry is not nil", entry)
 		}
-		fmt.Println("Calling Mode() on entry:", entry)
+		// fmt.Println("Calling Mode() on entry:", entry)
 		mode := entry.Mode()
 		fmt.Println("Mode for entry:", mode)
 		thisEntry := fmt.Sprintf(ENTRY_FORMAT, mode, entry.GetOID(), entry.GetName())
-		fmt.Println("OID for " + entry.Name + " = " + entry.GetOID())
+		// fmt.Println("OID for " + entry.Name + " = " + entry.GetOID())
 		listEntries += thisEntry
 	}
 
@@ -46,7 +46,7 @@ func NewTree(entries []*Entry) *Tree {
 }
 
 func (t *Tree) Type() string {
-	return "Tree"
+	return "tree"
 }
 
 func (t *Tree) ToString() string {
@@ -58,7 +58,7 @@ func (t *Tree) ToString() string {
 	listEntries := ""
 	for _, entry := range t.Entries {
 		thisEntry := fmt.Sprintf(ENTRY_FORMAT, entry.Mode(), entry.GetOID(), entry.GetName())
-		fmt.Println("OID for " + entry.Name + " = " + entry.GetOID())
+		// fmt.Println("OID for " + entry.Name + " = " + entry.GetOID())
 		listEntries += thisEntry
 	}
 

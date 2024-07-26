@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"os"
 )
 
@@ -29,9 +28,9 @@ func (e *Entry) GetOID() string {
 
 func (e *Entry) Mode() string {
 	if e == nil {
-		fmt.Println("Entry is nil in Mode()")
+		// fmt.Println("Entry is nil in Mode()")
 		return ""
 	}
-	fmt.Println("Entry in Mode():", e)
+	// fmt.Println("Entry in Mode():", e)
 	return "100644"
 }
