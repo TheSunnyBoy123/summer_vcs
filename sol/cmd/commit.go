@@ -56,10 +56,12 @@ to quickly create a Cobra application.`,
 			entries = append(entries, entry)
 		}
 
-		// fmt.Println("reached line 50")
-
-		tree := NewTree(entries)
-		database.Store(tree)
+		root := (&Tree{}).Build(entries)
+		for _, tree := range root.Traverse() {
+			database.Store(tree)
+		}
+		// tree := NewTree(entries)
+		// database.Store(tree)
 
 		//parent
 		fmt.Println("ref pathname: ", refs.pathname)

@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"os"
+	"strings"
 )
 
 type Entry struct {
@@ -16,6 +17,13 @@ func NewEntry(name, oid string, stat os.FileInfo) *Entry {
 		OID:  oid,
 		Stat: stat,
 	}
+}
+
+func (e *Entry) ParentDirectories() string {
+	name := e.Name
+	os_seperator := string(os.PathSeparator)
+	components := strings.Split(name, os_seperator)
+	return strings.Join(components[:len(components)-1], os_seperator)
 }
 
 func (e *Entry) GetName() string {
