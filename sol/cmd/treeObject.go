@@ -1,3 +1,5 @@
+// go:build excludex
+
 package cmd
 
 import (
@@ -11,13 +13,13 @@ const (
 )
 
 type Tree struct {
-	Entries []*Entry
+	Entries map[string]*Entry
 	OID     string
 }
 
 func NewTree() *Tree {
 
-	entries := []*Entry{}
+	entries := make(map[string]*Entry)
 	return &Tree{Entries: entries, OID: ""}
 
 	// sort.Slice(entries, func(i, j int) bool {
@@ -58,15 +60,16 @@ func (t *Tree) Build(entries []*Entry) *Tree {
 
 	root := NewTree()
 	for _, entry := range entries {
-		fmt.Println("The call is: ", entry.ParentDirectories(), entry)
+		fmt.Println("root.AddEntry(", entry.ParentDirectories(), entry, ")")
 		root.AddEntry(entry.ParentDirectories(), entry)
 	}
 	return root
 }
 
 func (t *Tree) AddEntry(parentDirectories []string, entry *Entry) {
-	if parentDirectories == nil {
-		
+	if len(parentDirectories) == 0 {
+		t.Entries[entry.Basename()] = entry
+	}
 
 }
 
@@ -74,24 +77,21 @@ func (t *Tree) Type() string {
 	return "tree"
 }
 
-func (t *Tree) AddEntry(parentDirectories []string, entry *Entry) {
-	t.Entries = append(t.Entries, entry)
-}
-
 func (t *Tree) ToString() string {
-	// Sort entries by name
-	sort.Slice(t.Entries, func(i, j int) bool {
-		return t.Entries[i].Name < t.Entries[j].Name
-	})
+	// sort entries by name
+	keys := make([]string, 0, len(t.Entries))
+	for k := range t.Entries {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
 
 	listEntries := ""
-	for _, entry := range t.Entries {
+	for _, k := range keys {
+		entry := t.Entries[k]
 		thisEntry := fmt.Sprintf(ENTRY_FORMAT, entry.Mode(), entry.GetOID(), entry.GetName())
-		// fmt.Println("OID for " + entry.Name + " = " + entry.GetOID())
 		listEntries += thisEntry
 	}
 
-	// fmt.Println("List entries:", listEntries)
 	return listEntries
 }
 

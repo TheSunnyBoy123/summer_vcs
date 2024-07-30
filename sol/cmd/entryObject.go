@@ -29,6 +29,12 @@ func (e *Entry) ParentDirectories() []string {
 	return components[:len(components)-1]
 }
 
+func (e *Entry) Basename() string {
+	separator := os.PathSeparator
+	components := strings.Split(e.Name, string(separator))
+	return components[len(components)-1]
+}
+
 func (e *Entry) GetName() string {
 	return e.Name
 }

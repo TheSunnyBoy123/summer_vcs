@@ -1,3 +1,5 @@
+//go:build exclude
+
 /*
 Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 */
@@ -56,8 +58,8 @@ to quickly create a Cobra application.`,
 			entry := NewEntry(file, blob.OID, stat)
 			entries = append(entries, entry)
 		}
-
-		root := Tree.Build(entries)
+		root := NewTree()
+		root.Build(entries)
 		root.Traverse(entries)
 
 		// tree := NewTree(entries)
