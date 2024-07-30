@@ -15,34 +15,59 @@ type Tree struct {
 	OID     string
 }
 
-func NewTree(entries []*Entry) *Tree {
+func NewTree() *Tree {
+
+	entries := []*Entry{}
+	return &Tree{Entries: entries, OID: ""}
+
+	// sort.Slice(entries, func(i, j int) bool {
+	// 	return entries[i].Name < entries[j].Name
+	// })
+
+	// listEntries := ""
+
+	// for _, entry := range entries {
+	// 	if entry == nil {
+	// 		// fmt.Println("Entry is nil")
+	// 		continue
+	// 	} else {
+	// 		// fmt.Println("Entry is not nil", entry)
+	// 	}
+	// 	// fmt.Println("Calling Mode() on entry:", entry)
+	// 	mode := entry.Mode()
+	// 	// fmt.Println("Mode for entry:", mode)
+	// 	thisEntry := fmt.Sprintf(ENTRY_FORMAT, mode, entry.GetOID(), entry.GetName())
+	// 	// fmt.Println("OID for " + entry.Name + " = " + entry.GetOID())
+	// 	listEntries += thisEntry
+	// }
+
+	// contents := fmt.Sprintf("tree %d\x00%s", len(listEntries), listEntries)
+	// oid := hashContents(contents)
+
+	// obj := &Tree{Entries: entries, OID: oid}
+	// // obj.SetOID("")
+	// return obj
+}
+
+// class method Build to create a tree object which iterates over each entry and adds to the tree
+func (t *Tree) Build(entries []*Entry) *Tree {
+	// sort entries by name
 	sort.Slice(entries, func(i, j int) bool {
 		return entries[i].Name < entries[j].Name
 	})
 
-	listEntries := ""
-
+	root := NewTree()
 	for _, entry := range entries {
-		if entry == nil {
-			// fmt.Println("Entry is nil")
-			continue
-		} else {
-			// fmt.Println("Entry is not nil", entry)
-		}
-		// fmt.Println("Calling Mode() on entry:", entry)
-		mode := entry.Mode()
-		fmt.Println("Mode for entry:", mode)
-		thisEntry := fmt.Sprintf(ENTRY_FORMAT, mode, entry.GetOID(), entry.GetName())
-		// fmt.Println("OID for " + entry.Name + " = " + entry.GetOID())
-		listEntries += thisEntry
+		fmt.Println("The call is: ", entry.ParentDirectories(), entry)
+		root.AddEntry(entry.ParentDirectories(), entry)
 	}
+	return root
+}
 
-	contents := fmt.Sprintf("tree %d\x00%s", len(listEntries), listEntries)
-	oid := hashContents(contents)
+func (t *Tree) AddEntry(parentDirectories []string, entry *Entry) {
+	if parentDirectories == nil {
+		
 
-	obj := &Tree{Entries: entries, OID: oid}
-	// obj.SetOID("")
-	return obj
 }
 
 func (t *Tree) Type() string {

@@ -57,13 +57,16 @@ to quickly create a Cobra application.`,
 			entries = append(entries, entry)
 		}
 
-		tree := NewTree(entries)
-		database.Store(tree)
+		root := Tree.Build(entries)
+		root.Traverse(entries)
+
+		// tree := NewTree(entries)
+		// database.Store(tree)
 
 		//parent
-		fmt.Println("ref pathname: ", refs.pathname)
+		// fmt.Println("ref pathname: ", refs.pathname)
 		parent := refs.ReadHead()
-		fmt.Println("Parent: ", parent)
+		// fmt.Println("Parent: ", parent)
 
 		author_name, author_email, err := getAuthorEnv()
 		if err != nil {
@@ -85,6 +88,9 @@ to quickly create a Cobra application.`,
 
 		// fmt.Println("[(commit)] " + commit.GetOID() + " " + message)
 		fmt.Println("[(commit)] " + commit.GetOID() + "\n" + message)
+
+		test_entry := NewEntry("bin/test", "1234", nil)
+		fmt.Println("Parent directories: ", test_entry.ParentDirectories())
 
 		// fmt.Println("Tree: ", tree.GetOID())
 		return nil

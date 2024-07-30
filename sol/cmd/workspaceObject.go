@@ -38,7 +38,7 @@ func (ws *Workspace) ListFiles(dir string) ([]string, error) {
 
 	var listFilesRecursive func(string) ([]string, error)
 	listFilesRecursive = func(path string) ([]string, error) {
-		fmt.Println("Called for path: " + path)
+		// fmt.Println("Called for path: " + path)
 		files, err := ioutil.ReadDir(path)
 		if err != nil {
 			return nil, err

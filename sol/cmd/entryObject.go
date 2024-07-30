@@ -19,11 +19,14 @@ func NewEntry(name, oid string, stat os.FileInfo) *Entry {
 	}
 }
 
-func (e *Entry) ParentDirectories() string {
-	name := e.Name
-	os_seperator := string(os.PathSeparator)
-	components := strings.Split(name, os_seperator)
-	return strings.Join(components[:len(components)-1], os_seperator)
+// ParentDirectories returns the parent directories of the entry
+func (e *Entry) ParentDirectories() []string {
+	separator := os.PathSeparator
+	// convert to string and split by separator
+	components := strings.Split(e.Name, string(separator))
+	// return all but the last component
+	// fmt.Println("returning: ", components[:len(components)-1])
+	return components[:len(components)-1]
 }
 
 func (e *Entry) GetName() string {
