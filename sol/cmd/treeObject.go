@@ -69,6 +69,12 @@ func (t *Tree) Build(entries []*Entry) *Tree {
 func (t *Tree) AddEntry(parentDirectories []string, entry *Entry) {
 	if len(parentDirectories) == 0 {
 		t.Entries[entry.Basename()] = entry
+	} else {
+		// subTree := t.Entries[Basename(parentDirectories[0])]
+		// subTree.AddEntry(parentDirectories[1:], entry)
+		if t.Entries[entry.Basename()] == nil {
+			t.Entries[entry.Basename()] = NewTree()
+		}
 	}
 
 }

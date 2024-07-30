@@ -215,3 +215,9 @@ func flatMap(input []string, f func(string) []string) []string {
 	}
 	return result
 }
+
+func Basename(path string) string {
+	separator := os.PathSeparator
+	components := strings.Split(path, string(separator))
+	return components[len(components)-1]
+}
