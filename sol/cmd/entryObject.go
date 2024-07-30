@@ -35,10 +35,11 @@ func (e *Entry) GetOID() string {
 }
 
 func (e *Entry) Mode() string {
-	if e == nil {
-		// fmt.Println("Entry is nil in Mode()")
-		return ""
+	// if stat shows file is executable
+	if e.Stat.Mode()&0111 != 0 {
+		return "100755"
 	}
-	// fmt.Println("Entry in Mode():", e)
 	return "100644"
+	// fmt.Println("Stat = ", e.Stat)
+	// fmt.Println("Mode = ", e.Stat.Mode()
 }

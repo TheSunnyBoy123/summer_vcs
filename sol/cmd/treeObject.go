@@ -45,44 +45,6 @@ func NewTree(entries []*Entry) *Tree {
 	return obj
 }
 
-func (t *Tree) AddEntry(parentDirectories []string, entry *Entry) {
-	if len(parentDirectories) == 0 {
-		t.Entries = append(t.Entries, entry)
-	} else {
-		// Find or create the subtree for the first parent directory
-		var subtree *Tree
-		for _, e := range t.Entries {
-			if e.GetName() == parentDirectories[0] {
-				subtree = e.GetTree()
-				break
-			}
-		}
-		if subtree == nil {
-			subtree = &Tree{}
-			t.Entries = append(t.Entries, &Entry{
-				Name:  parentDirectories[0],
-				Tree:  subtree,
-				IsDir: true,
-			})
-		}
-		subtree.AddEntry(parentDirectories[1:], entry)
-	}
-}
-
-func (t *Tree) Build(entries []*Entry) *Tree {
-	sort.Slice(entries, func(i, j int) bool {
-		return entries[i].Name < entries[j].Name
-	})
-
-	root := &Tree{}
-
-	for _, entry := range entries {
-		root.AddEntry([]string{entry.ParentDirectories()}, entry)
-	}
-
-	return root
-}
-
 func (t *Tree) Type() string {
 	return "tree"
 }

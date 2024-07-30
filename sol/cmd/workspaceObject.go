@@ -74,8 +74,13 @@ func (ws *Workspace) ListFiles(dir string) ([]string, error) {
 
 // return stat of file executable or not
 func (ws *Workspace) StatFile(path string) os.FileInfo {
+	// fmt.Println("Path is: ", path)
 	fullPath := filepath.Join(ws.Pathname, path)
-	info, _ := os.Stat(fullPath)
+	// fmt.Println("Full path is", fullPath)
+	info, err := os.Stat(fullPath)
+	if err != nil {
+		fmt.Println("Error in StatFile: ", err)
+	}
 	return info
 }
 

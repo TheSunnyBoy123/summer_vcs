@@ -25,7 +25,7 @@ to quickly create a Cobra application.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		root_path := "."
 		db_path := objectsPath
-		path := " " //placeholder
+		// path := " " //placeholder
 
 		// sol_path := solPath
 		// fmt.Println("reached line 31")
@@ -50,18 +50,15 @@ to quickly create a Cobra application.`,
 			database.Store(blob)
 
 			// stat is whether file is executable or not
-			stat := workspace.StatFile(path)
+			stat := workspace.StatFile(file)
+			// fmt.Println("Stat in main = ", stat)
 			// create entry object and add to list
 			entry := NewEntry(file, blob.OID, stat)
 			entries = append(entries, entry)
 		}
 
-		root := (&Tree{}).Build(entries)
-		for _, tree := range root.Traverse() {
-			database.Store(tree)
-		}
-		// tree := NewTree(entries)
-		// database.Store(tree)
+		tree := NewTree(entries)
+		database.Store(tree)
 
 		//parent
 		fmt.Println("ref pathname: ", refs.pathname)
