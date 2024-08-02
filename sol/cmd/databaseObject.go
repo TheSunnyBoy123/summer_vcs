@@ -5,12 +5,12 @@ import (
 	"path/filepath"
 )
 
-type SolObject interface {
-	Type() string
-	ToString() string
-	GetOID() string
-	SetOID(string)
-}
+// type SolObject interface {
+// 	Type() string
+// 	ToString() string
+// 	GetOID() string
+// 	SetOID(string)
+// }
 
 type Database struct {
 	Pathname string

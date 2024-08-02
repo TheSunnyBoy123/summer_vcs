@@ -46,6 +46,14 @@ func (c *Commit) GetOID() string {
 	return c.OID
 }
 
+func (c *Commit) GetName() string {
+	return ""
+}
+
+func (c *Commit) Mode() string {
+	return ""
+}
+
 func (c *Commit) GetParent() string {
 	return c.parent
 }

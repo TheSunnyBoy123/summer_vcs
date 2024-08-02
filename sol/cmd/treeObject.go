@@ -13,13 +13,13 @@ const (
 )
 
 type Tree struct {
-	Entries map[string]*Entry
+	Entries map[string]SolObject
 	OID     string
 }
 
 func NewTree() *Tree {
 
-	entries := make(map[string]*Entry)
+	entries := make(map[string]SolObject)
 	return &Tree{Entries: entries, OID: ""}
 
 	// sort.Slice(entries, func(i, j int) bool {
@@ -79,6 +79,8 @@ func (t *Tree) AddEntry(parentDirectories []string, entry *Entry) {
 
 }
 
+func (t *Tree) Traverse()
+
 func (t *Tree) Type() string {
 	return "tree"
 }
@@ -99,6 +101,14 @@ func (t *Tree) ToString() string {
 	}
 
 	return listEntries
+}
+
+func (t *Tree) GetName() string {
+	return "Some tree"
+}
+
+func (t *Tree) Mode() string {
+	return "40000"
 }
 
 func (t *Tree) GetOID() string {

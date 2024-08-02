@@ -19,6 +19,17 @@ func NewEntry(name, oid string, stat os.FileInfo) *Entry {
 	}
 }
 
+func (e *Entry) Type() string {
+	return "blob"
+}
+
+func (e *Entry) ToString() string {
+	oid := e.GetOID()
+	fileContents := readFile(".sol/objects/" + oid[:2] + "/" + oid[2:])
+	split := strings.Split(fileContents, "\x00")
+	return split[1]
+}
+
 // ParentDirectories returns the parent directories of the entry
 func (e *Entry) ParentDirectories() []string {
 	separator := os.PathSeparator

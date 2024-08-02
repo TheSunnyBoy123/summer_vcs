@@ -51,7 +51,6 @@ to quickly create a Cobra application.`,
 		root := NewTree()
 		root.Build(entries)
 		// root.Traverse(entries)
-
 	},
 }
 

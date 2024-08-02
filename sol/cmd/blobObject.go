@@ -30,3 +30,11 @@ func (b *Blob) GetOID() string {
 func (b *Blob) SetOID(oid string) {
 	b.OID = oid
 }
+
+func (b *Blob) Mode() string {
+	return "100644"
+}
+
+func (b *Blob) GetName() string {
+	return "Some blob"
+}

@@ -1,4 +1,4 @@
-//go:build exclude
+// go:build exclude
 
 /*
 Copyright © 2024 NAME HERE <EMAIL ADDRESS>
@@ -60,7 +60,8 @@ to quickly create a Cobra application.`,
 		}
 		root := NewTree()
 		root.Build(entries)
-		root.Traverse(entries)
+		fmt.Println("Entries: \n", entries)
+		// root.Traverse(entries)
 
 		// tree := NewTree(entries)
 		// database.Store(tree)
@@ -82,7 +83,7 @@ to quickly create a Cobra application.`,
 		message = strings.Trim(message, " ")
 		// fmt.Println("Message: ", message)
 
-		commit := NewCommit(parent, tree, author, message)
+		commit := NewCommit(parent, root, author, message)
 		database.Store(commit)
 
 		// fmt.Println("Commit: ", commit.GetOID())
