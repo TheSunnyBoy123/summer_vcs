@@ -47,11 +47,15 @@ func (e *Entry) Basename() string {
 }
 
 func (e *Entry) GetName() string {
-	return e.Name
+	return e.Basename()
 }
 
 func (e *Entry) GetOID() string {
 	return e.OID
+}
+
+func (e *Entry) SetOID(oid string) {
+	e.OID = oid
 }
 
 func (e *Entry) Mode() string {

@@ -110,7 +110,7 @@ func dirExists(dir string) bool {
 }
 
 func createDir(dir string) error {
-	if err := os.Mkdir(dir, 0755); err != nil {
+	if err := os.MkdirAll(dir, 0755); err != nil {
 		return err
 	}
 	return nil
@@ -174,6 +174,16 @@ func contentsObject(hash string) string {
 	contents := decompress(readFile(objectsPath + hash[:2] + "/" + hash[2:]))
 	lines := bytes.Split([]byte(contents), []byte("\x00"))
 	return string(lines[0])
+}
+
+func treeContents(oid string) []string {
+	contents := decompress(readFile(objectsPath + oid[:2] + "/" + oid[2:]))
+	parts := strings.SplitN(contents, "\x00", 2)
+	if len(parts) < 2 {
+		return nil
+	}
+	entries := strings.Split(parts[1], "\x00")
+	return entries[:len(entries)-1]
 }
 
 func getFullPath(dir string) string {

@@ -27,7 +27,7 @@ var hashObjectCmd = &cobra.Command{
 		contents := readFile(dir)
 		size := len(contents)
 
-		contents = "Blob " + string(size) + "\x00" + contents
+		contents = "Blob " + fmt.Sprintf("%d", size) + "\x00" + contents
 		contents = compress(contents)
 
 		hash := hashContents(contents)

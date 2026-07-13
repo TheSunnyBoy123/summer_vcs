@@ -1,59 +1,69 @@
 # SOL VCS
 
-# Commands
+A lightweight version control system built in Go, inspired by Git.
 
-## `init`
+## Commands
 
-## Synopsis
+### `init`
 
-> **sol init** [-h|--help] [-w|--warning] [-v|--verbose] [-h|--help] **[\<directory\>]**
+> **sol init** [-h|--help]
 
-## Description
-Creates a sol repository in the given directory. Default directory is the current directory.
+Creates a `.sol` repository in the current directory. Sets up the object store and reference directories.
 
+### `add`
 
-## `dissolve`
+> **sol add** [files...]
 
-## Synopsis
+Computes SHA-1 hashes of the given files, stores them as blob objects, builds a tree object, and records the tree hash in the staging area. If no files are given, all files in the working directory are added.
 
-> **sol dissolve** [-h|--help] [-w|--warning] [-v|--verbose] [-h|--help] **[\<directory\>]**
+### `commit`
 
-## Description
-Creates a sol repository in the given directory. Default directory is the current directory.
+> **sol commit** -m <message>
 
-## `cat-file`
+Creates a new commit from the staged tree (or walks the working directory if nothing is staged). Requires `~/.solconfig` with `SOL_AUTHOR_NAME` and `SOL_AUTHOR_EMAIL`.
 
-## Synopsis
+### `log`
 
-> **sol cat-file** **<object_sha>**
+> **sol log**
 
-## Description
-Creates a sol repository in the given directory. Default directory is the current directory.
+Displays the commit history starting from HEAD, following parent links.
 
+### `cat-file`
 
-## `ignore`
+> **sol cat-file** [-t|-p|-s] <object_sha>
 
-## Synopsis
+Prints object information:
+- `-t`  object type
+- `-p`  pretty-print object content
+- `-s`  object size
 
-> **sol ignore** **<[\<directory>]/[\<files>]** [rm|remove] []
+### `hash-file`
 
-## Description
-Creates a sol repository in the given directory. Default directory is the current directory.
+> **sol hash-file** [-w] <file>
 
+Computes the SHA-1 hash of a file. With `-w`, writes the object to the database.
 
-## `stage`
+### `diff`
 
-## Synopsis
+> **sol diff** <object1_sha> <object2_sha>
 
-## `commit`
+Shows the difference between two stored objects.
 
-## Synopsis
+### `dissolve`
 
-## Description
+> **sol dissolve**
 
+Removes the `.sol` repository directory and `.solignore` file (if present) from the current directory.
 
-## `clone`
+## Configuration
 
-## Synopsis
+Create `~/.solconfig` with the following format:
 
-## Description
+```
+SOL_AUTHOR_NAME=Your Name
+SOL_AUTHOR_EMAIL=your@email.com
+```
+
+## Storage
+
+Objects are stored in `.sol/objects/<first-2-chars>/<remaining-hash>` as zlib-compressed content formatted as `type size\x00<content>`.

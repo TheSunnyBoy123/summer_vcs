@@ -22,16 +22,17 @@ func NewDatabase(pathname string) *Database {
 	}
 }
 
-func (db *Database) Store(object SolObject) error {
+func (db *Database) Store(object SolObject) (string, error) {
 	content := fmt.Sprintf("%s %d\x00%s", object.Type(), len(object.ToString()), object.ToString())
 
 	oid := hashContents(content)
 
-	content = compress(content)
+	compressed := compress(content)
 
-	db.writeObject(oid, content)
-	// fmt.Println("Writing data:", content)
-	return nil
+	db.writeObject(oid, compressed)
+
+	object.SetOID(oid)
+	return oid, nil
 }
 
 func (db *Database) writeObject(oid, content string) error {

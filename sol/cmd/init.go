@@ -51,12 +51,16 @@ var initCmd = &cobra.Command{
 		// 	get working directory
 		// }
 
-		root_path := "."
+			root_path := "."
 		fullPath := getFullPath(root_path)
 
 		if notInitialisedRepo(root_path) {
-			initializeDirs([]string{solPath, refsPath, objectsPath})
-			// createFiles([]string{stagePath, solHead, solRefs})
+			initializeDirs([]string{solPath, objectsPath})
+			refs := NewRefs(solPath)
+			if !dirExists(refs.headsPath()) {
+				createDir(refs.headsPath())
+			}
+			refs.SetHeadToBranch("main")
 			fmt.Println("Repository initialised in ", fullPath)
 		} else {
 			fmt.Println("Repository already exists for this directory")

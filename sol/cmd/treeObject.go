@@ -1,5 +1,3 @@
-// go:build excludex
-
 package cmd
 
 import (
@@ -8,59 +6,27 @@ import (
 )
 
 const (
-	MODE         = "100644"       // Example mode, adjust as needed
-	ENTRY_FORMAT = "%s %s %s\x00" // Format for packing entries
+	ENTRY_FORMAT = "%s %s %s\x00"
 )
 
 type Tree struct {
 	Entries map[string]SolObject
 	OID     string
+	name    string
 }
 
-func NewTree() *Tree {
-
+func NewTree(name string) *Tree {
 	entries := make(map[string]SolObject)
-	return &Tree{Entries: entries, OID: ""}
-
-	// sort.Slice(entries, func(i, j int) bool {
-	// 	return entries[i].Name < entries[j].Name
-	// })
-
-	// listEntries := ""
-
-	// for _, entry := range entries {
-	// 	if entry == nil {
-	// 		// fmt.Println("Entry is nil")
-	// 		continue
-	// 	} else {
-	// 		// fmt.Println("Entry is not nil", entry)
-	// 	}
-	// 	// fmt.Println("Calling Mode() on entry:", entry)
-	// 	mode := entry.Mode()
-	// 	// fmt.Println("Mode for entry:", mode)
-	// 	thisEntry := fmt.Sprintf(ENTRY_FORMAT, mode, entry.GetOID(), entry.GetName())
-	// 	// fmt.Println("OID for " + entry.Name + " = " + entry.GetOID())
-	// 	listEntries += thisEntry
-	// }
-
-	// contents := fmt.Sprintf("tree %d\x00%s", len(listEntries), listEntries)
-	// oid := hashContents(contents)
-
-	// obj := &Tree{Entries: entries, OID: oid}
-	// // obj.SetOID("")
-	// return obj
+	return &Tree{Entries: entries, OID: "", name: name}
 }
 
-// class method Build to create a tree object which iterates over each entry and adds to the tree
-func (t *Tree) Build(entries []*Entry) *Tree {
-	// sort entries by name
+func BuildTree(entries []*Entry) *Tree {
 	sort.Slice(entries, func(i, j int) bool {
 		return entries[i].Name < entries[j].Name
 	})
 
-	root := NewTree()
+	root := NewTree("")
 	for _, entry := range entries {
-		fmt.Println("root.AddEntry(", entry.ParentDirectories(), entry, ")")
 		root.AddEntry(entry.ParentDirectories(), entry)
 	}
 	return root
@@ -70,23 +36,21 @@ func (t *Tree) AddEntry(parentDirectories []string, entry *Entry) {
 	if len(parentDirectories) == 0 {
 		t.Entries[entry.Basename()] = entry
 	} else {
-		// subTree := t.Entries[Basename(parentDirectories[0])]
-		// subTree.AddEntry(parentDirectories[1:], entry)
-		if t.Entries[entry.Basename()] == nil {
-			t.Entries[entry.Basename()] = NewTree()
+		dirName := parentDirectories[0]
+		subtree, ok := t.Entries[dirName]
+		if !ok {
+			subtree = NewTree(dirName)
+			t.Entries[dirName] = subtree
 		}
+		subtree.(*Tree).AddEntry(parentDirectories[1:], entry)
 	}
-
 }
-
-func (t *Tree) Traverse()
 
 func (t *Tree) Type() string {
 	return "tree"
 }
 
 func (t *Tree) ToString() string {
-	// sort entries by name
 	keys := make([]string, 0, len(t.Entries))
 	for k := range t.Entries {
 		keys = append(keys, k)
@@ -104,7 +68,7 @@ func (t *Tree) ToString() string {
 }
 
 func (t *Tree) GetName() string {
-	return "Some tree"
+	return t.name
 }
 
 func (t *Tree) Mode() string {
@@ -116,8 +80,6 @@ func (t *Tree) GetOID() string {
 }
 
 func (t *Tree) SetOID(oid string) {
-	content := fmt.Sprintf("Tree %d\x00%s", len(t.ToString()), t.ToString())
+	content := fmt.Sprintf("tree %d\x00%s", len(t.ToString()), t.ToString())
 	t.OID = hashContents(content)
 }
-
-// add a method to return "tree" when called
