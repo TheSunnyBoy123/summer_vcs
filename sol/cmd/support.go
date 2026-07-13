@@ -226,8 +226,60 @@ func flatMap(input []string, f func(string) []string) []string {
 	return result
 }
 
+func resolveRevision(ref string) string {
+	refs := NewRefs(solPath)
+
+	if len(ref) == 40 {
+		header, _, err := readCommitFromHash(ref)
+		if err == nil && header != "" {
+			return ref
+		}
+	}
+
+	if tag := refs.ReadTag(ref); tag != "" {
+		return tag
+	}
+
+	if branch := refs.ReadBranch(ref); branch != "" {
+		return branch
+	}
+
+	return ""
+}
+
 func Basename(path string) string {
 	separator := os.PathSeparator
 	components := strings.Split(path, string(separator))
 	return components[len(components)-1]
+}
+
+func BuildFileMap(treeOID, prefix string, fileMap map[string]string) {
+	entries, err := parseTreeEntries(treeOID)
+	if err != nil {
+		return
+	}
+	for _, entry := range entries {
+		fields := strings.SplitN(entry, " ", 3)
+		if len(fields) < 3 {
+			continue
+		}
+		mode := fields[0]
+		oid := fields[1]
+		name := fields[2]
+		path := name
+		if prefix != "" {
+			path = prefix + "/" + name
+		}
+		if mode == "40000" {
+			BuildFileMap(oid, path, fileMap)
+		} else {
+			fileMap[path] = oid
+		}
+	}
+}
+
+func TreeFileMap(treeOID string) map[string]string {
+	m := make(map[string]string)
+	BuildFileMap(treeOID, "", m)
+	return m
 }

@@ -3,35 +3,9 @@ package cmd
 import (
 	"fmt"
 	"sort"
-	"strings"
 
 	"github.com/spf13/cobra"
 )
-
-func buildFileMap(treeOID, prefix string, fileMap map[string]string) {
-	entries, err := parseTreeEntries(treeOID)
-	if err != nil {
-		return
-	}
-	for _, entry := range entries {
-		fields := strings.SplitN(entry, " ", 3)
-		if len(fields) < 3 {
-			continue
-		}
-		mode := fields[0]
-		oid := fields[1]
-		name := fields[2]
-		path := name
-		if prefix != "" {
-			path = prefix + "/" + name
-		}
-		if mode == "40000" {
-			buildFileMap(oid, path, fileMap)
-		} else {
-			fileMap[path] = oid
-		}
-	}
-}
 
 var statusCmd = &cobra.Command{
 	Use:   "status",
@@ -59,7 +33,7 @@ var statusCmd = &cobra.Command{
 			if err == nil {
 				meta := parseCommitBody(body)
 				if treeOID := meta["tree"]; treeOID != "" {
-					buildFileMap(treeOID, "", tracked)
+					BuildFileMap(treeOID, "", tracked)
 				}
 			}
 		}

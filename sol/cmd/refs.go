@@ -98,3 +98,45 @@ func (r *Refs) ListBranches() []string {
 	}
 	return names
 }
+
+func (r *Refs) tagsPath() string {
+	return filepath.Join(r.pathname, "refs", "tags")
+}
+
+func (r *Refs) tagPath(name string) string {
+	return filepath.Join(r.tagsPath(), name)
+}
+
+func (r *Refs) ReadTag(name string) string {
+	path := r.tagPath(name)
+	if !fileExists(path) {
+		return ""
+	}
+	return strings.TrimSpace(readFile(path))
+}
+
+func (r *Refs) UpdateTag(name, oid string) {
+	if !dirExists(r.tagsPath()) {
+		createDir(r.tagsPath())
+	}
+	writeFile(r.tagPath(name), oid+"\n")
+}
+
+func (r *Refs) DeleteTag(name string) {
+	path := r.tagPath(name)
+	if fileExists(path) {
+		deleteFile(path)
+	}
+}
+
+func (r *Refs) ListTags() []string {
+	if !dirExists(r.tagsPath()) {
+		return nil
+	}
+	entries, _ := ioutil.ReadDir(r.tagsPath())
+	var names []string
+	for _, e := range entries {
+		names = append(names, e.Name())
+	}
+	return names
+}
